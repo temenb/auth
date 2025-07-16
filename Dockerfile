@@ -1,15 +1,27 @@
 FROM node:22
 
-WORKDIR /app
+# Рабочая директория
+WORKDIR /usr/src/app
 
-COPY package*.json ./
+# Копируем только package*.json для npm install с кэшированием
+COPY --chown=node:node package*.json ./
 
+# Устанавливаем зависимости от root, чтобы избежать проблем с правами
+USER root
 RUN npm install
 
-COPY . .
+# Копируем остальные файлы
+COPY --chown=node:node . .
 
+# Создаём директорию dist с нужными правами
+RUN mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app/dist
+
+# Билдим проект от пользователя node
+USER node
 RUN npm run build
 
-EXPOSE 4000
+# Открываем порт
+EXPOSE 3000
 
-CMD [ "npm", "start" ]
+# Запуск
+CMD ["npm", "start"]

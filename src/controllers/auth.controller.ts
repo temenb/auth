@@ -6,14 +6,14 @@ export const test = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
-    res.status(201).json('test ok');
-    // const { email, password } = req.body;
-    // try {
-    //     const user = await authService.register(email, password);
-    //     res.status(201).json(user);
-    // } catch (error: any) {
-    //     res.status(400).json({ message: error.message });
-    // }
+    const { email, password } = req.body;
+    // res.status(201).json(req.body);
+    try {
+        const user = await authService.register(email, password);
+        res.status(201).json(user);
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
 export const login = async (req: Request, res: Response) => {

@@ -4,10 +4,11 @@ import passport from 'passport';
 
 const router = Router();
 
-router.get('/gettest', authController.test);
-router.get('/getasdf', authController.test);
-router.post('/posttest', authController.test);
-router.post('/postasdf', authController.test);
+//for troubleshooting purpose
+// router.get('/gettest', authController.test);
+// router.get('/getasdf', authController.test);
+// router.post('/posttest', authController.test);
+// router.post('/postasdf', authController.test);
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);

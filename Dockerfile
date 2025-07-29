@@ -8,7 +8,11 @@ COPY --chown=node:node package*.json ./
 
 # Устанавливаем зависимости от root, чтобы избежать проблем с правами
 USER root
+
 RUN npm install
+
+COPY prisma ./prisma
+RUN npx prisma generate
 
 # Копируем остальные файлы
 COPY --chown=node:node . .

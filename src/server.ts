@@ -1,9 +1,12 @@
-import app from './app';
-import { PrismaClient } from '@prisma/client';
+import server from './app';
+import * as grpc from '@grpc/grpc-js';
 
-const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Auth service is running on port ${PORT}`);
+server.bindAsync(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure(), () => {
+    console.log(`🚀 gRPC server running on port ${PORT}`);
 });
+
+// server.tryShutdown(() => {
+//     console.log('✅ gRPC server gracefully shut down');
+// });

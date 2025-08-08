@@ -25,13 +25,14 @@ export const login = async (email: string, password: string) => {
 
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
+    const userId = user.id;
 
     await prisma.user.update({
         where: { id: user.id },
         data: { refreshToken },
     });
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, userId };
 };
 
 export const refreshTokens = async (token: string) => {

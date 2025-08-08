@@ -29,7 +29,30 @@ export interface RegisterRequest {
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  userId: string;
+  userId: number;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RefreshTokensRequest {
+  token: string;
+}
+
+export interface RefreshTokensResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface LogoutRequest {
+  userId: number;
+}
+
+export interface LogoutResponse {
+  success: boolean;
+  message: string;
 }
 
 function createBaseRegisterRequest(): RegisterRequest {
@@ -109,7 +132,7 @@ export const RegisterRequest: MessageFns<RegisterRequest> = {
 };
 
 function createBaseAuthResponse(): AuthResponse {
-  return { accessToken: "", refreshToken: "", userId: "" };
+  return { accessToken: "", refreshToken: "", userId: 0 };
 }
 
 export const AuthResponse: MessageFns<AuthResponse> = {
@@ -120,8 +143,8 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     if (message.refreshToken !== "") {
       writer.uint32(18).string(message.refreshToken);
     }
-    if (message.userId !== "") {
-      writer.uint32(26).string(message.userId);
+    if (message.userId !== 0) {
+      writer.uint32(24).int64(message.userId);
     }
     return writer;
   },
@@ -150,11 +173,11 @@ export const AuthResponse: MessageFns<AuthResponse> = {
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.userId = reader.string();
+          message.userId = longToNumber(reader.int64());
           continue;
         }
       }
@@ -170,7 +193,7 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     return {
       accessToken: isSet(object.accessToken) ? globalThis.String(object.accessToken) : "",
       refreshToken: isSet(object.refreshToken) ? globalThis.String(object.refreshToken) : "",
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      userId: isSet(object.userId) ? globalThis.Number(object.userId) : 0,
     };
   },
 
@@ -182,8 +205,8 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     if (message.refreshToken !== "") {
       obj.refreshToken = message.refreshToken;
     }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
+    if (message.userId !== 0) {
+      obj.userId = Math.round(message.userId);
     }
     return obj;
   },
@@ -195,7 +218,351 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     const message = createBaseAuthResponse();
     message.accessToken = object.accessToken ?? "";
     message.refreshToken = object.refreshToken ?? "";
-    message.userId = object.userId ?? "";
+    message.userId = object.userId ?? 0;
+    return message;
+  },
+};
+
+function createBaseLoginRequest(): LoginRequest {
+  return { email: "", password: "" };
+}
+
+export const LoginRequest: MessageFns<LoginRequest> = {
+  encode(message: LoginRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.email !== "") {
+      writer.uint32(10).string(message.email);
+    }
+    if (message.password !== "") {
+      writer.uint32(18).string(message.password);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LoginRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLoginRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.email = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.password = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LoginRequest {
+    return {
+      email: isSet(object.email) ? globalThis.String(object.email) : "",
+      password: isSet(object.password) ? globalThis.String(object.password) : "",
+    };
+  },
+
+  toJSON(message: LoginRequest): unknown {
+    const obj: any = {};
+    if (message.email !== "") {
+      obj.email = message.email;
+    }
+    if (message.password !== "") {
+      obj.password = message.password;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<LoginRequest>): LoginRequest {
+    return LoginRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<LoginRequest>): LoginRequest {
+    const message = createBaseLoginRequest();
+    message.email = object.email ?? "";
+    message.password = object.password ?? "";
+    return message;
+  },
+};
+
+function createBaseRefreshTokensRequest(): RefreshTokensRequest {
+  return { token: "" };
+}
+
+export const RefreshTokensRequest: MessageFns<RefreshTokensRequest> = {
+  encode(message: RefreshTokensRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RefreshTokensRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRefreshTokensRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.token = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RefreshTokensRequest {
+    return { token: isSet(object.token) ? globalThis.String(object.token) : "" };
+  },
+
+  toJSON(message: RefreshTokensRequest): unknown {
+    const obj: any = {};
+    if (message.token !== "") {
+      obj.token = message.token;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<RefreshTokensRequest>): RefreshTokensRequest {
+    return RefreshTokensRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<RefreshTokensRequest>): RefreshTokensRequest {
+    const message = createBaseRefreshTokensRequest();
+    message.token = object.token ?? "";
+    return message;
+  },
+};
+
+function createBaseRefreshTokensResponse(): RefreshTokensResponse {
+  return { accessToken: "", refreshToken: "" };
+}
+
+export const RefreshTokensResponse: MessageFns<RefreshTokensResponse> = {
+  encode(message: RefreshTokensResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.accessToken !== "") {
+      writer.uint32(10).string(message.accessToken);
+    }
+    if (message.refreshToken !== "") {
+      writer.uint32(18).string(message.refreshToken);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RefreshTokensResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRefreshTokensResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.accessToken = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.refreshToken = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RefreshTokensResponse {
+    return {
+      accessToken: isSet(object.accessToken) ? globalThis.String(object.accessToken) : "",
+      refreshToken: isSet(object.refreshToken) ? globalThis.String(object.refreshToken) : "",
+    };
+  },
+
+  toJSON(message: RefreshTokensResponse): unknown {
+    const obj: any = {};
+    if (message.accessToken !== "") {
+      obj.accessToken = message.accessToken;
+    }
+    if (message.refreshToken !== "") {
+      obj.refreshToken = message.refreshToken;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<RefreshTokensResponse>): RefreshTokensResponse {
+    return RefreshTokensResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<RefreshTokensResponse>): RefreshTokensResponse {
+    const message = createBaseRefreshTokensResponse();
+    message.accessToken = object.accessToken ?? "";
+    message.refreshToken = object.refreshToken ?? "";
+    return message;
+  },
+};
+
+function createBaseLogoutRequest(): LogoutRequest {
+  return { userId: 0 };
+}
+
+export const LogoutRequest: MessageFns<LogoutRequest> = {
+  encode(message: LogoutRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== 0) {
+      writer.uint32(8).int64(message.userId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LogoutRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLogoutRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.userId = longToNumber(reader.int64());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LogoutRequest {
+    return { userId: isSet(object.userId) ? globalThis.Number(object.userId) : 0 };
+  },
+
+  toJSON(message: LogoutRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== 0) {
+      obj.userId = Math.round(message.userId);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<LogoutRequest>): LogoutRequest {
+    return LogoutRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<LogoutRequest>): LogoutRequest {
+    const message = createBaseLogoutRequest();
+    message.userId = object.userId ?? 0;
+    return message;
+  },
+};
+
+function createBaseLogoutResponse(): LogoutResponse {
+  return { success: false, message: "" };
+}
+
+export const LogoutResponse: MessageFns<LogoutResponse> = {
+  encode(message: LogoutResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LogoutResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLogoutResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LogoutResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+    };
+  },
+
+  toJSON(message: LogoutResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<LogoutResponse>): LogoutResponse {
+    return LogoutResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<LogoutResponse>): LogoutResponse {
+    const message = createBaseLogoutResponse();
+    message.success = object.success ?? false;
+    message.message = object.message ?? "";
     return message;
   },
 };
@@ -211,10 +578,41 @@ export const AuthServiceService = {
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
+  login: {
+    path: "/auth.AuthService/Login",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: LoginRequest): Buffer => Buffer.from(LoginRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): LoginRequest => LoginRequest.decode(value),
+    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+  },
+  logout: {
+    path: "/auth.AuthService/Logout",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: LogoutRequest): Buffer => Buffer.from(LogoutRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): LogoutRequest => LogoutRequest.decode(value),
+    responseSerialize: (value: LogoutResponse): Buffer => Buffer.from(LogoutResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): LogoutResponse => LogoutResponse.decode(value),
+  },
+  refreshTokens: {
+    path: "/auth.AuthService/RefreshTokens",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: RefreshTokensRequest): Buffer => Buffer.from(RefreshTokensRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): RefreshTokensRequest => RefreshTokensRequest.decode(value),
+    responseSerialize: (value: RefreshTokensResponse): Buffer =>
+      Buffer.from(RefreshTokensResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): RefreshTokensResponse => RefreshTokensResponse.decode(value),
+  },
 } as const;
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
   register: handleUnaryCall<RegisterRequest, AuthResponse>;
+  login: handleUnaryCall<LoginRequest, AuthResponse>;
+  logout: handleUnaryCall<LogoutRequest, LogoutResponse>;
+  refreshTokens: handleUnaryCall<RefreshTokensRequest, RefreshTokensResponse>;
 }
 
 export interface AuthServiceClient extends Client {
@@ -233,6 +631,48 @@ export interface AuthServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
+  login(request: LoginRequest, callback: (error: ServiceError | null, response: AuthResponse) => void): ClientUnaryCall;
+  login(
+    request: LoginRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  login(
+    request: LoginRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  logout(
+    request: LogoutRequest,
+    callback: (error: ServiceError | null, response: LogoutResponse) => void,
+  ): ClientUnaryCall;
+  logout(
+    request: LogoutRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: LogoutResponse) => void,
+  ): ClientUnaryCall;
+  logout(
+    request: LogoutRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: LogoutResponse) => void,
+  ): ClientUnaryCall;
+  refreshTokens(
+    request: RefreshTokensRequest,
+    callback: (error: ServiceError | null, response: RefreshTokensResponse) => void,
+  ): ClientUnaryCall;
+  refreshTokens(
+    request: RefreshTokensRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RefreshTokensResponse) => void,
+  ): ClientUnaryCall;
+  refreshTokens(
+    request: RefreshTokensRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RefreshTokensResponse) => void,
+  ): ClientUnaryCall;
 }
 
 export const AuthServiceClient = makeGenericClientConstructor(AuthServiceService, "auth.AuthService") as unknown as {
@@ -248,6 +688,17 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(int64: { toString(): string }): number {
+  const num = globalThis.Number(int64.toString());
+  if (num > globalThis.Number.MAX_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (num < globalThis.Number.MIN_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return num;
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -8,7 +8,10 @@ dotenv.config();
 const server = new grpc.Server();
 
 server.addService(AuthServiceService, {
-    register: authHandler.registerHandler,
+    register: authHandler.register,
+    login: authHandler.login,
+    refreshTokens: authHandler.refreshTokens,
+    logout: authHandler.logout,
 });
 
 export default server;

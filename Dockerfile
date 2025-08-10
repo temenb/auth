@@ -8,13 +8,12 @@ COPY --chown=node:node tsconfig.json ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node prisma ./prisma
 
-USER root
+USER node
+
 RUN npm install
 
-RUN mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app/dist
-
-USER node
 RUN npx prisma generate
+
 RUN npm run build
 
 EXPOSE 3000

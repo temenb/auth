@@ -7,10 +7,17 @@ COPY --chown=node:node jest.config.js ./
 COPY --chown=node:node tsconfig.json ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node prisma ./prisma
+COPY --chown=node:node __tests__ ./__tests__
 
-USER node
+USER root
 
 RUN npm install
+
+RUN chown -R node:node /usr/src/app/node_modules
+
+RUN mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app/dist
+
+USER node
 
 RUN npx prisma generate
 

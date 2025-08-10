@@ -29,7 +29,7 @@ export interface RegisterRequest {
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  userId: number;
+  userId: string;
 }
 
 export interface LoginRequest {
@@ -47,7 +47,7 @@ export interface RefreshTokensResponse {
 }
 
 export interface LogoutRequest {
-  userId: number;
+  userId: string;
 }
 
 export interface LogoutResponse {
@@ -132,7 +132,7 @@ export const RegisterRequest: MessageFns<RegisterRequest> = {
 };
 
 function createBaseAuthResponse(): AuthResponse {
-  return { accessToken: "", refreshToken: "", userId: 0 };
+  return { accessToken: "", refreshToken: "", userId: "" };
 }
 
 export const AuthResponse: MessageFns<AuthResponse> = {
@@ -143,8 +143,8 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     if (message.refreshToken !== "") {
       writer.uint32(18).string(message.refreshToken);
     }
-    if (message.userId !== 0) {
-      writer.uint32(24).int64(message.userId);
+    if (message.userId !== "") {
+      writer.uint32(26).string(message.userId);
     }
     return writer;
   },
@@ -173,11 +173,11 @@ export const AuthResponse: MessageFns<AuthResponse> = {
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.userId = longToNumber(reader.int64());
+          message.userId = reader.string();
           continue;
         }
       }
@@ -193,7 +193,7 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     return {
       accessToken: isSet(object.accessToken) ? globalThis.String(object.accessToken) : "",
       refreshToken: isSet(object.refreshToken) ? globalThis.String(object.refreshToken) : "",
-      userId: isSet(object.userId) ? globalThis.Number(object.userId) : 0,
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
     };
   },
 
@@ -205,8 +205,8 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     if (message.refreshToken !== "") {
       obj.refreshToken = message.refreshToken;
     }
-    if (message.userId !== 0) {
-      obj.userId = Math.round(message.userId);
+    if (message.userId !== "") {
+      obj.userId = message.userId;
     }
     return obj;
   },
@@ -218,7 +218,7 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     const message = createBaseAuthResponse();
     message.accessToken = object.accessToken ?? "";
     message.refreshToken = object.refreshToken ?? "";
-    message.userId = object.userId ?? 0;
+    message.userId = object.userId ?? "";
     return message;
   },
 };
@@ -434,13 +434,13 @@ export const RefreshTokensResponse: MessageFns<RefreshTokensResponse> = {
 };
 
 function createBaseLogoutRequest(): LogoutRequest {
-  return { userId: 0 };
+  return { userId: "" };
 }
 
 export const LogoutRequest: MessageFns<LogoutRequest> = {
   encode(message: LogoutRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== 0) {
-      writer.uint32(8).int64(message.userId);
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
     }
     return writer;
   },
@@ -453,11 +453,11 @@ export const LogoutRequest: MessageFns<LogoutRequest> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.userId = longToNumber(reader.int64());
+          message.userId = reader.string();
           continue;
         }
       }
@@ -470,13 +470,13 @@ export const LogoutRequest: MessageFns<LogoutRequest> = {
   },
 
   fromJSON(object: any): LogoutRequest {
-    return { userId: isSet(object.userId) ? globalThis.Number(object.userId) : 0 };
+    return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
   },
 
   toJSON(message: LogoutRequest): unknown {
     const obj: any = {};
-    if (message.userId !== 0) {
-      obj.userId = Math.round(message.userId);
+    if (message.userId !== "") {
+      obj.userId = message.userId;
     }
     return obj;
   },
@@ -486,7 +486,7 @@ export const LogoutRequest: MessageFns<LogoutRequest> = {
   },
   fromPartial(object: DeepPartial<LogoutRequest>): LogoutRequest {
     const message = createBaseLogoutRequest();
-    message.userId = object.userId ?? 0;
+    message.userId = object.userId ?? "";
     return message;
   },
 };
@@ -688,17 +688,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-function longToNumber(int64: { toString(): string }): number {
-  const num = globalThis.Number(int64.toString());
-  if (num > globalThis.Number.MAX_SAFE_INTEGER) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  if (num < globalThis.Number.MIN_SAFE_INTEGER) {
-    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
-  }
-  return num;
-}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

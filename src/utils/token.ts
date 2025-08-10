@@ -9,11 +9,11 @@ const refreshTokenOptions: SignOptions = {
     expiresIn: config.refreshTokenExpiresIn as any,
 };
 
-export const generateAccessToken = (userId: number) => {
+export const generateAccessToken = (userId: string) => {
     return jwt.sign({ userId }, config.accessTokenSecret as string, accessTokenOptions);
 };
 
-export const generateRefreshToken = (userId: number) => {
+export const generateRefreshToken = (userId: string) => {
     return jwt.sign({ userId }, config.refreshTokenSecret as string, refreshTokenOptions);
 };
 

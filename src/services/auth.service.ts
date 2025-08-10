@@ -51,14 +51,14 @@ export const refreshTokens = async (token: string) => {
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
 
-export const logout = async (userId: number) => {
+export const logout = async (userId: string) => {
     await prisma.user.update({
         where: { id: userId },
         data: { refreshToken: null },
     });
 };
 
-export const getProfile = async (userId: number) => {
+export const getProfile = async (userId: string) => {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, createdAt: true } });
     return user;
 };

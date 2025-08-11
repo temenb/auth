@@ -11,11 +11,12 @@ COPY --chown=node:node __tests__ ./__tests__
 
 USER root
 
-RUN npm install
+RUN apt-get update && apt-get install -y netcat-openbsd
 
-RUN chown -R node:node /usr/src/app/node_modules
-
-RUN mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app/dist
+RUN npm ci
+#
+RUN chown -R node:node /usr/src/app/node_modules\
+    && mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app/dist
 
 USER node
 
@@ -28,4 +29,4 @@ EXPOSE 3000
 CMD ["npm", "start"]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+  CMD nc -z localhost 3000 || exit 1

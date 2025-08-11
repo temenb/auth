@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { publishToQueue } from '../lib/queue';
 import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
 
@@ -11,6 +12,10 @@ export const register = async (email: string, password: string) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
         data: { email, password: hashedPassword },
+    });
+
+    await publishToQueue(process.env.RABBITMQ_QUEUE_USER_CREATED!, {
+        userId: user.id,
     });
 
     return user;

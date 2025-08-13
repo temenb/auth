@@ -5,7 +5,7 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '.
 
 const prisma = new PrismaClient();
 
-export const register = async (email: string, password: string) => {
+export const createUser = async (email: string, password: string) => {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) throw new Error('User already exists');
 
@@ -63,7 +63,7 @@ export const logout = async (userId: string) => {
     });
 };
 
-export const getProfile = async (userId: string) => {
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, createdAt: true } });
-    return user;
-};
+// export const getProfile = async (userId: string) => {
+//     const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, createdAt: true } });
+//     return user;
+// };

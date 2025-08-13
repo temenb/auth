@@ -2,6 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as AuthGrpc from '../../generated/auth';
 import * as authService from '../../services/auth.service';
 import {Request, Response} from "express";
+import {createUser} from "../../services/auth.service";
 
 export const register = async (
     call: grpc.ServerUnaryCall<AuthGrpc.RegisterRequest, AuthGrpc.AuthResponse>,
@@ -10,7 +11,7 @@ export const register = async (
     const { email, password } = call.request;
 
     try {
-        await authService.register(email, password);
+        await authService.createUser(email, password);
 
         const result = await authService.login(email, password);
 

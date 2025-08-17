@@ -18,6 +18,7 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "auth";
 
@@ -53,6 +54,15 @@ export interface LogoutRequest {
 export interface LogoutResponse {
   success: boolean;
   message: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
 }
 
 function createBaseRegisterRequest(): RegisterRequest {
@@ -567,6 +577,140 @@ export const LogoutResponse: MessageFns<LogoutResponse> = {
   },
 };
 
+function createBaseForgotPasswordRequest(): ForgotPasswordRequest {
+  return { email: "" };
+}
+
+export const ForgotPasswordRequest: MessageFns<ForgotPasswordRequest> = {
+  encode(message: ForgotPasswordRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.email !== "") {
+      writer.uint32(10).string(message.email);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ForgotPasswordRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseForgotPasswordRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.email = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ForgotPasswordRequest {
+    return { email: isSet(object.email) ? globalThis.String(object.email) : "" };
+  },
+
+  toJSON(message: ForgotPasswordRequest): unknown {
+    const obj: any = {};
+    if (message.email !== "") {
+      obj.email = message.email;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ForgotPasswordRequest>): ForgotPasswordRequest {
+    return ForgotPasswordRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ForgotPasswordRequest>): ForgotPasswordRequest {
+    const message = createBaseForgotPasswordRequest();
+    message.email = object.email ?? "";
+    return message;
+  },
+};
+
+function createBaseResetPasswordRequest(): ResetPasswordRequest {
+  return { token: "", newPassword: "" };
+}
+
+export const ResetPasswordRequest: MessageFns<ResetPasswordRequest> = {
+  encode(message: ResetPasswordRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
+    if (message.newPassword !== "") {
+      writer.uint32(18).string(message.newPassword);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ResetPasswordRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseResetPasswordRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.token = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.newPassword = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ResetPasswordRequest {
+    return {
+      token: isSet(object.token) ? globalThis.String(object.token) : "",
+      newPassword: isSet(object.newPassword) ? globalThis.String(object.newPassword) : "",
+    };
+  },
+
+  toJSON(message: ResetPasswordRequest): unknown {
+    const obj: any = {};
+    if (message.token !== "") {
+      obj.token = message.token;
+    }
+    if (message.newPassword !== "") {
+      obj.newPassword = message.newPassword;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ResetPasswordRequest>): ResetPasswordRequest {
+    return ResetPasswordRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ResetPasswordRequest>): ResetPasswordRequest {
+    const message = createBaseResetPasswordRequest();
+    message.token = object.token ?? "";
+    message.newPassword = object.newPassword ?? "";
+    return message;
+  },
+};
+
 export type AuthService = typeof AuthService;
 export const AuthService = {
   register: {
@@ -606,6 +750,25 @@ export const AuthService = {
       Buffer.from(RefreshTokensResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): RefreshTokensResponse => RefreshTokensResponse.decode(value),
   },
+  forgotPassword: {
+    path: "/auth.Auth/ForgotPassword",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ForgotPasswordRequest): Buffer =>
+      Buffer.from(ForgotPasswordRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): ForgotPasswordRequest => ForgotPasswordRequest.decode(value),
+    responseSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer): Empty => Empty.decode(value),
+  },
+  resetPassword: {
+    path: "/auth.Auth/ResetPassword",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ResetPasswordRequest): Buffer => Buffer.from(ResetPasswordRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): ResetPasswordRequest => ResetPasswordRequest.decode(value),
+    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+  },
 } as const;
 
 export interface AuthServer extends UntypedServiceImplementation {
@@ -613,6 +776,8 @@ export interface AuthServer extends UntypedServiceImplementation {
   login: handleUnaryCall<LoginRequest, AuthResponse>;
   logout: handleUnaryCall<LogoutRequest, LogoutResponse>;
   refreshTokens: handleUnaryCall<RefreshTokensRequest, RefreshTokensResponse>;
+  forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty>;
+  resetPassword: handleUnaryCall<ResetPasswordRequest, AuthResponse>;
 }
 
 export interface AuthClient extends Client {
@@ -672,6 +837,36 @@ export interface AuthClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: RefreshTokensResponse) => void,
+  ): ClientUnaryCall;
+  forgotPassword(
+    request: ForgotPasswordRequest,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  forgotPassword(
+    request: ForgotPasswordRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  forgotPassword(
+    request: ForgotPasswordRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  resetPassword(
+    request: ResetPasswordRequest,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  resetPassword(
+    request: ResetPasswordRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  resetPassword(
+    request: ResetPasswordRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
 }
 

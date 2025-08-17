@@ -12,6 +12,9 @@ server.addService(AuthService, {
     login: authHandler.login,
     refreshTokens: authHandler.refreshTokens,
     logout: authHandler.logout,
+    // forgotPassword: authHandler.forgotPassword,
+    // resetPassword: authHandler.resetPassword,
 });
 
 export default server;
+

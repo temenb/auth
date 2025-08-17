@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { publishToQueue } from '../lib/queue';
 import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
+import config from '../config/config';
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,7 @@ export const createUser = async (email: string, password: string) => {
         data: { email, password: hashedPassword },
     });
 
-    await publishToQueue(process.env.RABBITMQ_QUEUE_USER_CREATED!, {
+    await publishToQueue(config.rabbitmqQueueUserCreated!, {
         userId: user.id,
     });
 
@@ -61,6 +62,20 @@ export const logout = async (userId: string) => {
         where: { id: userId },
         data: { refreshToken: null },
     });
+};
+
+export const forgotPassword = async (userId: string) => {
+    // await prisma.user.update({
+    //     where: { id: userId },
+    //     data: { refreshToken: null },
+    // });
+};
+
+export const resetPassword = async (userId: string) => {
+    // await prisma.user.update({
+    //     where: { id: userId },
+    //     data: { refreshToken: null },
+    // });
 };
 
 // export const getProfile = async (userId: string) => {

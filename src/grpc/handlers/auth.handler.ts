@@ -1,8 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
 import * as AuthGrpc from '../../generated/auth';
 import * as authService from '../../services/auth.service';
-import {Request, Response} from "express";
-import {createUser} from "../../services/auth.service";
 
 export const register = async (
     call: grpc.ServerUnaryCall<AuthGrpc.RegisterRequest, AuthGrpc.AuthResponse>,
@@ -53,17 +51,18 @@ export const login = async (
 };
 
 export const refreshTokens = async (
-    call: grpc.ServerUnaryCall<AuthGrpc.RefreshTokensRequest, AuthGrpc.RefreshTokensResponse>,
-    callback: grpc.sendUnaryData<AuthGrpc.RefreshTokensResponse>
+    call: grpc.ServerUnaryCall<AuthGrpc.RefreshTokensRequest, AuthGrpc.AuthResponse>,
+    callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
 ) => {
     const { token } = call.request;
 
     try {
-        const tokens = await authService.refreshTokens(token);
+        const response = await authService.refreshTokens(token);
 
         callback(null, {
-            accessToken: tokens.accessToken?? '',
-            refreshToken: tokens.refreshToken?? '',
+            userId: response.userId?? '',
+            accessToken: response.accessToken?? '',
+            refreshToken: response.refreshToken?? '',
         });
 
     } catch (err: any) {

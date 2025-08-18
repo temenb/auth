@@ -54,7 +54,7 @@ export const refreshTokens = async (token: string) => {
         data: { refreshToken: newRefreshToken },
     });
 
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken, userId: user.id };
 };
 
 export const logout = async (userId: string) => {

@@ -18,7 +18,6 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
-import { Empty as Empty1 } from "./google/protobuf/empty";
 
 export const protobufPackage = "auth";
 
@@ -39,7 +38,6 @@ export interface HealthReport_ComponentsEntry {
 export interface StatusInfo {
   name: string;
   version: string;
-  build: string;
   uptime: number;
   env: string;
   timestamp: string;
@@ -309,7 +307,7 @@ export const HealthReport_ComponentsEntry: MessageFns<HealthReport_ComponentsEnt
 };
 
 function createBaseStatusInfo(): StatusInfo {
-  return { name: "", version: "", build: "", uptime: 0, env: "", timestamp: "" };
+  return { name: "", version: "", uptime: 0, env: "", timestamp: "" };
 }
 
 export const StatusInfo: MessageFns<StatusInfo> = {
@@ -319,9 +317,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     }
     if (message.version !== "") {
       writer.uint32(18).string(message.version);
-    }
-    if (message.build !== "") {
-      writer.uint32(26).string(message.build);
     }
     if (message.uptime !== 0) {
       writer.uint32(33).double(message.uptime);
@@ -356,14 +351,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
           }
 
           message.version = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.build = reader.string();
           continue;
         }
         case 4: {
@@ -403,7 +390,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       version: isSet(object.version) ? globalThis.String(object.version) : "",
-      build: isSet(object.build) ? globalThis.String(object.build) : "",
       uptime: isSet(object.uptime) ? globalThis.Number(object.uptime) : 0,
       env: isSet(object.env) ? globalThis.String(object.env) : "",
       timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "",
@@ -417,9 +403,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     }
     if (message.version !== "") {
       obj.version = message.version;
-    }
-    if (message.build !== "") {
-      obj.build = message.build;
     }
     if (message.uptime !== 0) {
       obj.uptime = message.uptime;
@@ -440,7 +423,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     const message = createBaseStatusInfo();
     message.name = object.name ?? "";
     message.version = object.version ?? "";
-    message.build = object.build ?? "";
     message.uptime = object.uptime ?? 0;
     message.env = object.env ?? "";
     message.timestamp = object.timestamp ?? "";
@@ -1179,8 +1161,8 @@ export const AuthService = {
     requestSerialize: (value: ForgotPasswordRequest): Buffer =>
       Buffer.from(ForgotPasswordRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): ForgotPasswordRequest => ForgotPasswordRequest.decode(value),
-    responseSerialize: (value: Empty1): Buffer => Buffer.from(Empty1.encode(value).finish()),
-    responseDeserialize: (value: Buffer): Empty1 => Empty1.decode(value),
+    responseSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer): Empty => Empty.decode(value),
   },
   resetPassword: {
     path: "/auth.Auth/ResetPassword",
@@ -1234,7 +1216,7 @@ export interface AuthServer extends UntypedServiceImplementation {
   login: handleUnaryCall<LoginRequest, AuthResponse>;
   logout: handleUnaryCall<LogoutRequest, LogoutResponse>;
   refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthResponse>;
-  forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty1>;
+  forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty>;
   resetPassword: handleUnaryCall<ResetPasswordRequest, AuthResponse>;
   health: handleUnaryCall<Empty, HealthReport>;
   status: handleUnaryCall<Empty, StatusInfo>;
@@ -1302,18 +1284,18 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   forgotPassword(
     request: ForgotPasswordRequest,
-    callback: (error: ServiceError | null, response: Empty1) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   forgotPassword(
     request: ForgotPasswordRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: Empty1) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   forgotPassword(
     request: ForgotPasswordRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Empty1) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   resetPassword(
     request: ResetPasswordRequest,

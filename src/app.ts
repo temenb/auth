@@ -14,6 +14,10 @@ server.addService(AuthService, {
     logout: authHandler.logout,
     // forgotPassword: authHandler.forgotPassword,
     // resetPassword: authHandler.resetPassword,
+    health: authHandler.health,
+    status: authHandler.status,
+    livez: authHandler.livez,
+    readyz: authHandler.readyz,
 });
 
 export default server;

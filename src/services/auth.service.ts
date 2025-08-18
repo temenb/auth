@@ -62,6 +62,11 @@ export const logout = async (userId: string) => {
         where: { id: userId },
         data: { refreshToken: null },
     });
+
+    return {
+        success: true,
+        message: 'Logged out successfully',
+    };
 };
 
 export const forgotPassword = async (userId: string) => {

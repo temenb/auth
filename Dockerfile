@@ -13,8 +13,9 @@ USER root
 
 RUN apt-get update && apt-get install -y netcat-openbsd
 
-RUN npm ci
-#
+#RUN npm ci
+RUN npm i
+
 RUN chown -R node:node /usr/src/app/node_modules\
     && mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app/dist
 

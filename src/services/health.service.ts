@@ -22,7 +22,7 @@ export const health = async () => {
 
 export const status = async () => {
   return {
-    name: 'gateway',
+    name: 'auth',
     version: process.env.BUILD_VERSION || 'dev',
     env: process.env.NODE_ENV || 'development',
     uptime: Math.floor((Date.now() - startedAt) / 1000),

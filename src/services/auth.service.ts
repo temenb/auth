@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { publishToQueue } from '../lib/queue';
+import { publishToQueue } from '../utils/ampq';
 import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
 import config from '../config/config';

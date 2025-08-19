@@ -83,7 +83,6 @@ export interface HealthReport_ComponentsEntry {
 export interface StatusInfo {
   name: string;
   version: string;
-  build: string;
   uptime: number;
   env: string;
   timestamp: string;
@@ -352,7 +351,7 @@ export const HealthReport_ComponentsEntry: MessageFns<HealthReport_ComponentsEnt
 };
 
 function createBaseStatusInfo(): StatusInfo {
-  return { name: "", version: "", build: "", uptime: 0, env: "", timestamp: "" };
+  return { name: "", version: "", uptime: 0, env: "", timestamp: "" };
 }
 
 export const StatusInfo: MessageFns<StatusInfo> = {
@@ -362,9 +361,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     }
     if (message.version !== "") {
       writer.uint32(18).string(message.version);
-    }
-    if (message.build !== "") {
-      writer.uint32(26).string(message.build);
     }
     if (message.uptime !== 0) {
       writer.uint32(33).double(message.uptime);
@@ -399,14 +395,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
           }
 
           message.version = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.build = reader.string();
           continue;
         }
         case 4: {
@@ -446,7 +434,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       version: isSet(object.version) ? globalThis.String(object.version) : "",
-      build: isSet(object.build) ? globalThis.String(object.build) : "",
       uptime: isSet(object.uptime) ? globalThis.Number(object.uptime) : 0,
       env: isSet(object.env) ? globalThis.String(object.env) : "",
       timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "",
@@ -460,9 +447,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     }
     if (message.version !== "") {
       obj.version = message.version;
-    }
-    if (message.build !== "") {
-      obj.build = message.build;
     }
     if (message.uptime !== 0) {
       obj.uptime = message.uptime;
@@ -483,7 +467,6 @@ export const StatusInfo: MessageFns<StatusInfo> = {
     const message = createBaseStatusInfo();
     message.name = object.name ?? "";
     message.version = object.version ?? "";
-    message.build = object.build ?? "";
     message.uptime = object.uptime ?? 0;
     message.env = object.env ?? "";
     message.timestamp = object.timestamp ?? "";

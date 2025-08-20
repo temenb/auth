@@ -1,7 +1,6 @@
 import amqp, {ChannelModel} from 'amqplib';
 import config from '../config/config';
 import logger from './logger';
-import {connect} from "amqplib/callback_api";
 
 let connection: amqp.ChannelModel;
 const channels: Record<string, amqp.Channel> = {};
@@ -9,6 +8,7 @@ const channels: Record<string, amqp.Channel> = {};
 export async function getConnection(): Promise<amqp.ChannelModel> {
   return await connectWithRetry();
 }
+
 export async function connectWithRetry(): Promise<amqp.ChannelModel> {
   if (connection) {
     return connection;
@@ -29,9 +29,9 @@ export async function connectWithRetry(): Promise<amqp.ChannelModel> {
   throw new Error('❌ RabbitMQ connection failed after retries');
 }
 
-export async function publishToExchange(event: string, payload: any) {
-  const channel = await getChannel(event);
-
+export async function publishToExchange(event: string, payload: any, chanelName?: string) {
+  const channel = await getChannel(chanelName);
+  await channel.assertQueue(event);
   await channel.prefetch(5);
   await channel.assertExchange(event, 'fanout', { durable: true });
 
@@ -39,9 +39,20 @@ export async function publishToExchange(event: string, payload: any) {
   channel.publish(event, '', message, { persistent: true });
 }
 
-export async function getChannel(queueName: string): Promise<amqp.Channel> {
-  if (channels[queueName]) {
-    return channels[queueName];
+export async function publishToQueue(event: string, payload: any, chanelName?: string) {
+  const channel = await getChannel(chanelName);
+
+  await channel.prefetch(5);
+
+  const message = Buffer.from(JSON.stringify(payload));
+  channel.sendToQueue(event, message, { persistent: true });
+}
+
+export async function getChannel(name?: string): Promise<amqp.Channel> {
+  name = name?? 'default';
+
+  if (channels[name]) {
+    return channels[name];
   }
 
   if (!connection) {
@@ -52,8 +63,7 @@ export async function getChannel(queueName: string): Promise<amqp.Channel> {
   }
 
   const channel = await connection.createChannel();
-  await channel.assertQueue(queueName);
-  channels[queueName] = channel;
+  channels[name] = channel;
   return channel;
 }
 

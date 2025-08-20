@@ -7,13 +7,15 @@ import config from '../config/config';
 const prisma = new PrismaClient();
 
 export const createUser = async (email: string, password: string) => {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) throw new Error('User already exists');
+    // const existingUser = await prisma.user.findUnique({ where: { email } });
+    // if (existingUser) throw new Error('User already exists');
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-        data: { email, password: hashedPassword },
-    });
+    // const user = await prisma.user.create({
+    //     data: { email, password: hashedPassword },
+    // });
+
+    const user = await getUser();
 
     await publishToExchange(config.rabbitmqExchangeUserCreated!, {
         userId: user.id,
@@ -21,6 +23,12 @@ export const createUser = async (email: string, password: string) => {
 
     return user;
 };
+
+export const getUser = async () => {
+    const user = await prisma.user.findFirst();
+    if (!user) throw new Error('No users registered');
+    return user;
+}
 
 export const login = async (email: string, password: string) => {
     const user = await prisma.user.findUnique({ where: { email } });

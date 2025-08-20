@@ -54,3 +54,5 @@ Thumbs.db
 
 # Postman files (optional, если не хочешь версионировать коллекции)
 *.postman_collection.json
+
+.turbo/

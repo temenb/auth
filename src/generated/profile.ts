@@ -52,16 +52,16 @@ export interface ReadyStatus {
 }
 
 export interface UpsertRequest {
-  userId: string;
+  ownerId: string;
 }
 
 export interface ViewRequest {
-  userId: string;
+  ownerId: string;
 }
 
 export interface ProfileResponse {
   profileId: string;
-  userId: string;
+  ownerId: string;
   nickname: string;
   level: number;
   rating: number;
@@ -526,13 +526,13 @@ export const ReadyStatus: MessageFns<ReadyStatus> = {
 };
 
 function createBaseUpsertRequest(): UpsertRequest {
-  return { userId: "" };
+  return { ownerId: "" };
 }
 
 export const UpsertRequest: MessageFns<UpsertRequest> = {
   encode(message: UpsertRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
+    if (message.ownerId !== "") {
+      writer.uint32(10).string(message.ownerId);
     }
     return writer;
   },
@@ -549,7 +549,7 @@ export const UpsertRequest: MessageFns<UpsertRequest> = {
             break;
           }
 
-          message.userId = reader.string();
+          message.ownerId = reader.string();
           continue;
         }
       }
@@ -562,13 +562,13 @@ export const UpsertRequest: MessageFns<UpsertRequest> = {
   },
 
   fromJSON(object: any): UpsertRequest {
-    return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
+    return { ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "" };
   },
 
   toJSON(message: UpsertRequest): unknown {
     const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
+    if (message.ownerId !== "") {
+      obj.ownerId = message.ownerId;
     }
     return obj;
   },
@@ -578,19 +578,19 @@ export const UpsertRequest: MessageFns<UpsertRequest> = {
   },
   fromPartial(object: DeepPartial<UpsertRequest>): UpsertRequest {
     const message = createBaseUpsertRequest();
-    message.userId = object.userId ?? "";
+    message.ownerId = object.ownerId ?? "";
     return message;
   },
 };
 
 function createBaseViewRequest(): ViewRequest {
-  return { userId: "" };
+  return { ownerId: "" };
 }
 
 export const ViewRequest: MessageFns<ViewRequest> = {
   encode(message: ViewRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
+    if (message.ownerId !== "") {
+      writer.uint32(10).string(message.ownerId);
     }
     return writer;
   },
@@ -607,7 +607,7 @@ export const ViewRequest: MessageFns<ViewRequest> = {
             break;
           }
 
-          message.userId = reader.string();
+          message.ownerId = reader.string();
           continue;
         }
       }
@@ -620,13 +620,13 @@ export const ViewRequest: MessageFns<ViewRequest> = {
   },
 
   fromJSON(object: any): ViewRequest {
-    return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
+    return { ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "" };
   },
 
   toJSON(message: ViewRequest): unknown {
     const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
+    if (message.ownerId !== "") {
+      obj.ownerId = message.ownerId;
     }
     return obj;
   },
@@ -636,13 +636,13 @@ export const ViewRequest: MessageFns<ViewRequest> = {
   },
   fromPartial(object: DeepPartial<ViewRequest>): ViewRequest {
     const message = createBaseViewRequest();
-    message.userId = object.userId ?? "";
+    message.ownerId = object.ownerId ?? "";
     return message;
   },
 };
 
 function createBaseProfileResponse(): ProfileResponse {
-  return { profileId: "", userId: "", nickname: "", level: 0, rating: 0, experience: 0 };
+  return { profileId: "", ownerId: "", nickname: "", level: 0, rating: 0, experience: 0 };
 }
 
 export const ProfileResponse: MessageFns<ProfileResponse> = {
@@ -650,8 +650,8 @@ export const ProfileResponse: MessageFns<ProfileResponse> = {
     if (message.profileId !== "") {
       writer.uint32(10).string(message.profileId);
     }
-    if (message.userId !== "") {
-      writer.uint32(18).string(message.userId);
+    if (message.ownerId !== "") {
+      writer.uint32(18).string(message.ownerId);
     }
     if (message.nickname !== "") {
       writer.uint32(26).string(message.nickname);
@@ -688,7 +688,7 @@ export const ProfileResponse: MessageFns<ProfileResponse> = {
             break;
           }
 
-          message.userId = reader.string();
+          message.ownerId = reader.string();
           continue;
         }
         case 3: {
@@ -735,7 +735,7 @@ export const ProfileResponse: MessageFns<ProfileResponse> = {
   fromJSON(object: any): ProfileResponse {
     return {
       profileId: isSet(object.profileId) ? globalThis.String(object.profileId) : "",
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
       nickname: isSet(object.nickname) ? globalThis.String(object.nickname) : "",
       level: isSet(object.level) ? globalThis.Number(object.level) : 0,
       rating: isSet(object.rating) ? globalThis.Number(object.rating) : 0,
@@ -748,8 +748,8 @@ export const ProfileResponse: MessageFns<ProfileResponse> = {
     if (message.profileId !== "") {
       obj.profileId = message.profileId;
     }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
+    if (message.ownerId !== "") {
+      obj.ownerId = message.ownerId;
     }
     if (message.nickname !== "") {
       obj.nickname = message.nickname;
@@ -772,7 +772,7 @@ export const ProfileResponse: MessageFns<ProfileResponse> = {
   fromPartial(object: DeepPartial<ProfileResponse>): ProfileResponse {
     const message = createBaseProfileResponse();
     message.profileId = object.profileId ?? "";
-    message.userId = object.userId ?? "";
+    message.ownerId = object.ownerId ?? "";
     message.nickname = object.nickname ?? "";
     message.level = object.level ?? 0;
     message.rating = object.rating ?? 0;

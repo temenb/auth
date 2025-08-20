@@ -8,7 +8,7 @@ export  const config = {
     accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || '15m',
     refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
     rabbitmqUrl: process.env.RABBITMQ_URL || '',
-    rabbitmqQueueUserCreated: process.env.RABBITMQ_QUEUE_USER_CREATED || '',
+    rabbitmqExchangeUserCreated: process.env.RABBITMQ_EXCHANGE_USER_CREATED || 'user.created',
     port: process.env.PORT || 3000,
 };
 

@@ -97,7 +97,7 @@ export interface ReadyStatus {
 }
 
 export interface ListAsteroidsRequest {
-  userId: string;
+  ownerId: string;
   galaxyId: string;
 }
 
@@ -126,7 +126,7 @@ export interface ListGalaxiesResponse {
 }
 
 export interface ListGalaxiesRequest {
-  userId: string;
+  ownerId: string;
 }
 
 export interface Galaxy {
@@ -591,13 +591,13 @@ export const ReadyStatus: MessageFns<ReadyStatus> = {
 };
 
 function createBaseListAsteroidsRequest(): ListAsteroidsRequest {
-  return { userId: "", galaxyId: "" };
+  return { ownerId: "", galaxyId: "" };
 }
 
 export const ListAsteroidsRequest: MessageFns<ListAsteroidsRequest> = {
   encode(message: ListAsteroidsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
+    if (message.ownerId !== "") {
+      writer.uint32(10).string(message.ownerId);
     }
     if (message.galaxyId !== "") {
       writer.uint32(18).string(message.galaxyId);
@@ -617,7 +617,7 @@ export const ListAsteroidsRequest: MessageFns<ListAsteroidsRequest> = {
             break;
           }
 
-          message.userId = reader.string();
+          message.ownerId = reader.string();
           continue;
         }
         case 2: {
@@ -639,15 +639,15 @@ export const ListAsteroidsRequest: MessageFns<ListAsteroidsRequest> = {
 
   fromJSON(object: any): ListAsteroidsRequest {
     return {
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
       galaxyId: isSet(object.galaxyId) ? globalThis.String(object.galaxyId) : "",
     };
   },
 
   toJSON(message: ListAsteroidsRequest): unknown {
     const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
+    if (message.ownerId !== "") {
+      obj.ownerId = message.ownerId;
     }
     if (message.galaxyId !== "") {
       obj.galaxyId = message.galaxyId;
@@ -660,7 +660,7 @@ export const ListAsteroidsRequest: MessageFns<ListAsteroidsRequest> = {
   },
   fromPartial(object: DeepPartial<ListAsteroidsRequest>): ListAsteroidsRequest {
     const message = createBaseListAsteroidsRequest();
-    message.userId = object.userId ?? "";
+    message.ownerId = object.ownerId ?? "";
     message.galaxyId = object.galaxyId ?? "";
     return message;
   },
@@ -1031,13 +1031,13 @@ export const ListGalaxiesResponse: MessageFns<ListGalaxiesResponse> = {
 };
 
 function createBaseListGalaxiesRequest(): ListGalaxiesRequest {
-  return { userId: "" };
+  return { ownerId: "" };
 }
 
 export const ListGalaxiesRequest: MessageFns<ListGalaxiesRequest> = {
   encode(message: ListGalaxiesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
+    if (message.ownerId !== "") {
+      writer.uint32(10).string(message.ownerId);
     }
     return writer;
   },
@@ -1054,7 +1054,7 @@ export const ListGalaxiesRequest: MessageFns<ListGalaxiesRequest> = {
             break;
           }
 
-          message.userId = reader.string();
+          message.ownerId = reader.string();
           continue;
         }
       }
@@ -1067,13 +1067,13 @@ export const ListGalaxiesRequest: MessageFns<ListGalaxiesRequest> = {
   },
 
   fromJSON(object: any): ListGalaxiesRequest {
-    return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
+    return { ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "" };
   },
 
   toJSON(message: ListGalaxiesRequest): unknown {
     const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
+    if (message.ownerId !== "") {
+      obj.ownerId = message.ownerId;
     }
     return obj;
   },
@@ -1083,7 +1083,7 @@ export const ListGalaxiesRequest: MessageFns<ListGalaxiesRequest> = {
   },
   fromPartial(object: DeepPartial<ListGalaxiesRequest>): ListGalaxiesRequest {
     const message = createBaseListGalaxiesRequest();
-    message.userId = object.userId ?? "";
+    message.ownerId = object.ownerId ?? "";
     return message;
   },
 };

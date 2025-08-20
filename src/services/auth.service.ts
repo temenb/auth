@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { publishToQueue } from '../utils/ampq';
+import { publishToExchange } from '../utils/ampq';
 import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
 import config from '../config/config';
@@ -15,7 +15,7 @@ export const createUser = async (email: string, password: string) => {
         data: { email, password: hashedPassword },
     });
 
-    await publishToQueue(config.rabbitmqQueueUserCreated!, {
+    await publishToExchange(config.rabbitmqExchangeUserCreated!, {
         userId: user.id,
     });
 

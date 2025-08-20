@@ -60,7 +60,8 @@ export const checkRabbit = async (): Promise<boolean> => {
     const conn = await amqp.connect(config.rabbitmqUrl);
     const channel = await conn.createChannel();
 
-    await channel.assertQueue(config.rabbitmqQueueUserCreated, { durable: true });
+    await channel.assertExchange(config.rabbitmqExchangeUserCreated, 'fanout', { durable: true });
+
     await channel.close();
     await conn.close();
     return true;

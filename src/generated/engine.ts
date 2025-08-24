@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.7.7
 //   protoc               v3.21.11
-// source: ship.proto
+// source: engine.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
@@ -19,7 +19,7 @@ import {
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 
-export const protobufPackage = "ship";
+export const protobufPackage = "engine";
 
 export interface Empty {
 }
@@ -48,32 +48,6 @@ export interface LiveStatus {
 
 export interface ReadyStatus {
   ready: boolean;
-}
-
-export interface ListShipsRequest {
-  playerId: string;
-}
-
-export interface ListShipsResponse {
-  ships: ShipObject[];
-}
-
-export interface ShipObject {
-  id: string;
-  x: number;
-  y: number;
-  isBusy: boolean;
-  asteroidId: string;
-}
-
-export interface AttackAsteroidRequest {
-  shipId: string;
-  asteroidId: string;
-}
-
-export interface AttackAsteroidResponse {
-  success: boolean;
-  message: string;
 }
 
 function createBaseEmpty(): Empty {
@@ -533,424 +507,10 @@ export const ReadyStatus: MessageFns<ReadyStatus> = {
   },
 };
 
-function createBaseListShipsRequest(): ListShipsRequest {
-  return { playerId: "" };
-}
-
-export const ListShipsRequest: MessageFns<ListShipsRequest> = {
-  encode(message: ListShipsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.playerId !== "") {
-      writer.uint32(10).string(message.playerId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ListShipsRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseListShipsRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.playerId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ListShipsRequest {
-    return { playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "" };
-  },
-
-  toJSON(message: ListShipsRequest): unknown {
-    const obj: any = {};
-    if (message.playerId !== "") {
-      obj.playerId = message.playerId;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<ListShipsRequest>): ListShipsRequest {
-    return ListShipsRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ListShipsRequest>): ListShipsRequest {
-    const message = createBaseListShipsRequest();
-    message.playerId = object.playerId ?? "";
-    return message;
-  },
-};
-
-function createBaseListShipsResponse(): ListShipsResponse {
-  return { ships: [] };
-}
-
-export const ListShipsResponse: MessageFns<ListShipsResponse> = {
-  encode(message: ListShipsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.ships) {
-      ShipObject.encode(v!, writer.uint32(10).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ListShipsResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseListShipsResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.ships.push(ShipObject.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ListShipsResponse {
-    return {
-      ships: globalThis.Array.isArray(object?.ships) ? object.ships.map((e: any) => ShipObject.fromJSON(e)) : [],
-    };
-  },
-
-  toJSON(message: ListShipsResponse): unknown {
-    const obj: any = {};
-    if (message.ships?.length) {
-      obj.ships = message.ships.map((e) => ShipObject.toJSON(e));
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<ListShipsResponse>): ListShipsResponse {
-    return ListShipsResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ListShipsResponse>): ListShipsResponse {
-    const message = createBaseListShipsResponse();
-    message.ships = object.ships?.map((e) => ShipObject.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseShipObject(): ShipObject {
-  return { id: "", x: 0, y: 0, isBusy: false, asteroidId: "" };
-}
-
-export const ShipObject: MessageFns<ShipObject> = {
-  encode(message: ShipObject, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    if (message.x !== 0) {
-      writer.uint32(16).int32(message.x);
-    }
-    if (message.y !== 0) {
-      writer.uint32(24).int32(message.y);
-    }
-    if (message.isBusy !== false) {
-      writer.uint32(32).bool(message.isBusy);
-    }
-    if (message.asteroidId !== "") {
-      writer.uint32(42).string(message.asteroidId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ShipObject {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseShipObject();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.x = reader.int32();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.y = reader.int32();
-          continue;
-        }
-        case 4: {
-          if (tag !== 32) {
-            break;
-          }
-
-          message.isBusy = reader.bool();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.asteroidId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ShipObject {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      x: isSet(object.x) ? globalThis.Number(object.x) : 0,
-      y: isSet(object.y) ? globalThis.Number(object.y) : 0,
-      isBusy: isSet(object.isBusy) ? globalThis.Boolean(object.isBusy) : false,
-      asteroidId: isSet(object.asteroidId) ? globalThis.String(object.asteroidId) : "",
-    };
-  },
-
-  toJSON(message: ShipObject): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    if (message.x !== 0) {
-      obj.x = Math.round(message.x);
-    }
-    if (message.y !== 0) {
-      obj.y = Math.round(message.y);
-    }
-    if (message.isBusy !== false) {
-      obj.isBusy = message.isBusy;
-    }
-    if (message.asteroidId !== "") {
-      obj.asteroidId = message.asteroidId;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<ShipObject>): ShipObject {
-    return ShipObject.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ShipObject>): ShipObject {
-    const message = createBaseShipObject();
-    message.id = object.id ?? "";
-    message.x = object.x ?? 0;
-    message.y = object.y ?? 0;
-    message.isBusy = object.isBusy ?? false;
-    message.asteroidId = object.asteroidId ?? "";
-    return message;
-  },
-};
-
-function createBaseAttackAsteroidRequest(): AttackAsteroidRequest {
-  return { shipId: "", asteroidId: "" };
-}
-
-export const AttackAsteroidRequest: MessageFns<AttackAsteroidRequest> = {
-  encode(message: AttackAsteroidRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.shipId !== "") {
-      writer.uint32(10).string(message.shipId);
-    }
-    if (message.asteroidId !== "") {
-      writer.uint32(18).string(message.asteroidId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): AttackAsteroidRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAttackAsteroidRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.shipId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.asteroidId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AttackAsteroidRequest {
-    return {
-      shipId: isSet(object.shipId) ? globalThis.String(object.shipId) : "",
-      asteroidId: isSet(object.asteroidId) ? globalThis.String(object.asteroidId) : "",
-    };
-  },
-
-  toJSON(message: AttackAsteroidRequest): unknown {
-    const obj: any = {};
-    if (message.shipId !== "") {
-      obj.shipId = message.shipId;
-    }
-    if (message.asteroidId !== "") {
-      obj.asteroidId = message.asteroidId;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<AttackAsteroidRequest>): AttackAsteroidRequest {
-    return AttackAsteroidRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<AttackAsteroidRequest>): AttackAsteroidRequest {
-    const message = createBaseAttackAsteroidRequest();
-    message.shipId = object.shipId ?? "";
-    message.asteroidId = object.asteroidId ?? "";
-    return message;
-  },
-};
-
-function createBaseAttackAsteroidResponse(): AttackAsteroidResponse {
-  return { success: false, message: "" };
-}
-
-export const AttackAsteroidResponse: MessageFns<AttackAsteroidResponse> = {
-  encode(message: AttackAsteroidResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.success !== false) {
-      writer.uint32(8).bool(message.success);
-    }
-    if (message.message !== "") {
-      writer.uint32(18).string(message.message);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): AttackAsteroidResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAttackAsteroidResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.success = reader.bool();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.message = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AttackAsteroidResponse {
-    return {
-      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
-      message: isSet(object.message) ? globalThis.String(object.message) : "",
-    };
-  },
-
-  toJSON(message: AttackAsteroidResponse): unknown {
-    const obj: any = {};
-    if (message.success !== false) {
-      obj.success = message.success;
-    }
-    if (message.message !== "") {
-      obj.message = message.message;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<AttackAsteroidResponse>): AttackAsteroidResponse {
-    return AttackAsteroidResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<AttackAsteroidResponse>): AttackAsteroidResponse {
-    const message = createBaseAttackAsteroidResponse();
-    message.success = object.success ?? false;
-    message.message = object.message ?? "";
-    return message;
-  },
-};
-
-export type ShipService = typeof ShipService;
-export const ShipService = {
-  listShips: {
-    path: "/ship.Ship/ListShips",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: ListShipsRequest): Buffer => Buffer.from(ListShipsRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): ListShipsRequest => ListShipsRequest.decode(value),
-    responseSerialize: (value: ListShipsResponse): Buffer => Buffer.from(ListShipsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ListShipsResponse => ListShipsResponse.decode(value),
-  },
-  attackAsteroid: {
-    path: "/ship.Ship/AttackAsteroid",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: AttackAsteroidRequest): Buffer =>
-      Buffer.from(AttackAsteroidRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): AttackAsteroidRequest => AttackAsteroidRequest.decode(value),
-    responseSerialize: (value: AttackAsteroidResponse): Buffer =>
-      Buffer.from(AttackAsteroidResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AttackAsteroidResponse => AttackAsteroidResponse.decode(value),
-  },
+export type EngineService = typeof EngineService;
+export const EngineService = {
   health: {
-    path: "/ship.Ship/Health",
+    path: "/engine.Engine/Health",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -959,7 +519,7 @@ export const ShipService = {
     responseDeserialize: (value: Buffer): HealthReport => HealthReport.decode(value),
   },
   status: {
-    path: "/ship.Ship/Status",
+    path: "/engine.Engine/Status",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -968,7 +528,7 @@ export const ShipService = {
     responseDeserialize: (value: Buffer): StatusInfo => StatusInfo.decode(value),
   },
   livez: {
-    path: "/ship.Ship/Livez",
+    path: "/engine.Engine/Livez",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -977,7 +537,7 @@ export const ShipService = {
     responseDeserialize: (value: Buffer): LiveStatus => LiveStatus.decode(value),
   },
   readyz: {
-    path: "/ship.Ship/Readyz",
+    path: "/engine.Engine/Readyz",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -987,46 +547,14 @@ export const ShipService = {
   },
 } as const;
 
-export interface ShipServer extends UntypedServiceImplementation {
-  listShips: handleUnaryCall<ListShipsRequest, ListShipsResponse>;
-  attackAsteroid: handleUnaryCall<AttackAsteroidRequest, AttackAsteroidResponse>;
+export interface EngineServer extends UntypedServiceImplementation {
   health: handleUnaryCall<Empty, HealthReport>;
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
 }
 
-export interface ShipClient extends Client {
-  listShips(
-    request: ListShipsRequest,
-    callback: (error: ServiceError | null, response: ListShipsResponse) => void,
-  ): ClientUnaryCall;
-  listShips(
-    request: ListShipsRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: ListShipsResponse) => void,
-  ): ClientUnaryCall;
-  listShips(
-    request: ListShipsRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ListShipsResponse) => void,
-  ): ClientUnaryCall;
-  attackAsteroid(
-    request: AttackAsteroidRequest,
-    callback: (error: ServiceError | null, response: AttackAsteroidResponse) => void,
-  ): ClientUnaryCall;
-  attackAsteroid(
-    request: AttackAsteroidRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AttackAsteroidResponse) => void,
-  ): ClientUnaryCall;
-  attackAsteroid(
-    request: AttackAsteroidRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AttackAsteroidResponse) => void,
-  ): ClientUnaryCall;
+export interface EngineClient extends Client {
   health(request: Empty, callback: (error: ServiceError | null, response: HealthReport) => void): ClientUnaryCall;
   health(
     request: Empty,
@@ -1077,9 +605,9 @@ export interface ShipClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const ShipClient = makeGenericClientConstructor(ShipService, "ship.Ship") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ShipClient;
-  service: typeof ShipService;
+export const EngineClient = makeGenericClientConstructor(EngineService, "engine.Engine") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): EngineClient;
+  service: typeof EngineService;
   serviceName: string;
 };
 

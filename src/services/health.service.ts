@@ -1,21 +1,21 @@
 import logger from "../utils/logger";
-import amqp from 'amqplib';
+import { broadcastEvent } from '../utils/kafka';
 import prisma from '../utils/prisma';
 import config from '../config/config';
 
 const startedAt = Date.now();
 
 export const health = async () => {
-  const [pgOk, rabbitOk] = await Promise.all([
+  const [pgOk, kafkaOk] = await Promise.all([
     checkPostgres(),
-    checkRabbit(),
+    checkKafka(),
   ]);
 
   return {
-    healthy: pgOk && rabbitOk,
+    healthy: pgOk && kafkaOk,
     components: {
       postgres: pgOk ? 'ok' : 'fail',
-      rabbitmq: rabbitOk ? 'ok' : 'fail',
+      kafka: kafkaOk ? 'ok' : 'fail',
     },
   };
 };
@@ -37,12 +37,12 @@ export const livez = async () => {
 };
 
 export const readyz = async () => {
-  const [pgOk, rabbitOk] = await Promise.all([
+  const [pgOk, kafkaOk] = await Promise.all([
     checkPostgres(),
-    checkRabbit(),
+    checkKafka(),
   ]);
 
-  return {ready: pgOk && rabbitOk};
+  return {ready: pgOk && kafkaOk};
 };
 
 export const checkPostgres = async (): Promise<boolean> => {
@@ -55,18 +55,12 @@ export const checkPostgres = async (): Promise<boolean> => {
   }
 };
 
-export const checkRabbit = async (): Promise<boolean> => {
+export const checkKafka = async (): Promise<boolean> => {
   try {
-    const conn = await amqp.connect(config.rabbitmqUrl);
-    const channel = await conn.createChannel();
-
-    await channel.assertExchange(config.rabbitmqExchangeUserCreated, 'fanout', { durable: true });
-
-    await channel.close();
-    await conn.close();
+    await broadcastEvent('healthcheck', [{ value: 'ping' }]);
     return true;
   } catch (err) {
-    logger.error('❌ RabbitMQ health check failed:', err);
+    logger.error('❌ Kafka health check failed:', err);
     return false;
   }
 };

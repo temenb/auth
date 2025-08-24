@@ -1,14 +1,14 @@
 import { PrismaClient } from '@prisma/client';
-import { publishToExchange } from '../utils/ampq';
 import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
 import config from '../config/config';
+import { broadcastEvent } from "../utils/kafka";
 
 const prisma = new PrismaClient();
 
 export const createUser = async (email: string, password: string) => {
     const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) throw new Error('User already exists');
+    // if (existingUser) throw new Error('User already exists');
 
     const hashedPassword = await bcrypt.hash(password, 10);
     // const user = await prisma.user.create({
@@ -17,9 +17,7 @@ export const createUser = async (email: string, password: string) => {
 
     const user = await getUser();
 
-    await publishToExchange(config.rabbitmqExchangeUserCreated!, {
-        ownerId: user.id,
-    });
+    broadcastEvent(config.kafkaTopicUserCreated, [{ value: JSON.stringify({ ownerId: user.id }) }]);
 
     return user;
 };

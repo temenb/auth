@@ -2,8 +2,9 @@
   "name": "auth",
   "version": "1.0.0",
   "main": "dist/server.js",
+  "packageManager": "pnpm@8.6.3",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon --watch src --watch ../../shared/ --exec ts-node src/server.ts",
     "stage": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",

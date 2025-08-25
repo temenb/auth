@@ -25,4 +25,3 @@ server.addService(AuthService, {
 initKafka(config.kafkaClientId);
 
 export default server;
-

@@ -507,10 +507,10 @@ export const ReadyStatus: MessageFns<ReadyStatus> = {
   },
 };
 
-export type EngineService = typeof EngineService;
-export const EngineService = {
+export type MailService = typeof MailService;
+export const MailService = {
   health: {
-    path: "/mail.Engine/Health",
+    path: "/mail.Mail/Health",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -519,7 +519,7 @@ export const EngineService = {
     responseDeserialize: (value: Buffer): HealthReport => HealthReport.decode(value),
   },
   status: {
-    path: "/mail.Engine/Status",
+    path: "/mail.Mail/Status",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -528,7 +528,7 @@ export const EngineService = {
     responseDeserialize: (value: Buffer): StatusInfo => StatusInfo.decode(value),
   },
   livez: {
-    path: "/mail.Engine/Livez",
+    path: "/mail.Mail/Livez",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -537,7 +537,7 @@ export const EngineService = {
     responseDeserialize: (value: Buffer): LiveStatus => LiveStatus.decode(value),
   },
   readyz: {
-    path: "/mail.Engine/Readyz",
+    path: "/mail.Mail/Readyz",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -547,14 +547,14 @@ export const EngineService = {
   },
 } as const;
 
-export interface EngineServer extends UntypedServiceImplementation {
+export interface MailServer extends UntypedServiceImplementation {
   health: handleUnaryCall<Empty, HealthReport>;
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
 }
 
-export interface EngineClient extends Client {
+export interface MailClient extends Client {
   health(request: Empty, callback: (error: ServiceError | null, response: HealthReport) => void): ClientUnaryCall;
   health(
     request: Empty,
@@ -605,9 +605,9 @@ export interface EngineClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const EngineClient = makeGenericClientConstructor(EngineService, "mail.Engine") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): EngineClient;
-  service: typeof EngineService;
+export const MailClient = makeGenericClientConstructor(MailService, "mail.Mail") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): MailClient;
+  service: typeof MailService;
   serviceName: string;
 };
 

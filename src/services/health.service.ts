@@ -1,7 +1,6 @@
 import logger from "../utils/logger";
 import { broadcastEvent } from '../utils/kafka';
 import prisma from '../utils/prisma';
-import config from '../config/config';
 
 const startedAt = Date.now();
 

@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.7.7
 //   protoc               v6.32.0
-// source: profile.proto
+// source: mail.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
@@ -19,7 +19,7 @@ import {
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 
-export const protobufPackage = "profile";
+export const protobufPackage = "mail";
 
 export interface Empty {
 }
@@ -48,23 +48,6 @@ export interface LiveStatus {
 
 export interface ReadyStatus {
   ready: boolean;
-}
-
-export interface UpsertRequest {
-  ownerId: string;
-}
-
-export interface ViewRequest {
-  ownerId: string;
-}
-
-export interface ProfileResponse {
-  profileId: string;
-  ownerId: string;
-  nickname: string;
-  level: number;
-  rating: number;
-  experience: number;
 }
 
 function createBaseEmpty(): Empty {
@@ -524,284 +507,10 @@ export const ReadyStatus: MessageFns<ReadyStatus> = {
   },
 };
 
-function createBaseUpsertRequest(): UpsertRequest {
-  return { ownerId: "" };
-}
-
-export const UpsertRequest: MessageFns<UpsertRequest> = {
-  encode(message: UpsertRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.ownerId !== "") {
-      writer.uint32(10).string(message.ownerId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpsertRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpsertRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.ownerId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): UpsertRequest {
-    return { ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "" };
-  },
-
-  toJSON(message: UpsertRequest): unknown {
-    const obj: any = {};
-    if (message.ownerId !== "") {
-      obj.ownerId = message.ownerId;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<UpsertRequest>): UpsertRequest {
-    return UpsertRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UpsertRequest>): UpsertRequest {
-    const message = createBaseUpsertRequest();
-    message.ownerId = object.ownerId ?? "";
-    return message;
-  },
-};
-
-function createBaseViewRequest(): ViewRequest {
-  return { ownerId: "" };
-}
-
-export const ViewRequest: MessageFns<ViewRequest> = {
-  encode(message: ViewRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.ownerId !== "") {
-      writer.uint32(10).string(message.ownerId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ViewRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseViewRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.ownerId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ViewRequest {
-    return { ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "" };
-  },
-
-  toJSON(message: ViewRequest): unknown {
-    const obj: any = {};
-    if (message.ownerId !== "") {
-      obj.ownerId = message.ownerId;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<ViewRequest>): ViewRequest {
-    return ViewRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ViewRequest>): ViewRequest {
-    const message = createBaseViewRequest();
-    message.ownerId = object.ownerId ?? "";
-    return message;
-  },
-};
-
-function createBaseProfileResponse(): ProfileResponse {
-  return { profileId: "", ownerId: "", nickname: "", level: 0, rating: 0, experience: 0 };
-}
-
-export const ProfileResponse: MessageFns<ProfileResponse> = {
-  encode(message: ProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.profileId !== "") {
-      writer.uint32(10).string(message.profileId);
-    }
-    if (message.ownerId !== "") {
-      writer.uint32(18).string(message.ownerId);
-    }
-    if (message.nickname !== "") {
-      writer.uint32(26).string(message.nickname);
-    }
-    if (message.level !== 0) {
-      writer.uint32(32).int64(message.level);
-    }
-    if (message.rating !== 0) {
-      writer.uint32(40).int64(message.rating);
-    }
-    if (message.experience !== 0) {
-      writer.uint32(48).int64(message.experience);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProfileResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProfileResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.profileId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.ownerId = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.nickname = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 32) {
-            break;
-          }
-
-          message.level = longToNumber(reader.int64());
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
-            break;
-          }
-
-          message.rating = longToNumber(reader.int64());
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
-          message.experience = longToNumber(reader.int64());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProfileResponse {
-    return {
-      profileId: isSet(object.profileId) ? globalThis.String(object.profileId) : "",
-      ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
-      nickname: isSet(object.nickname) ? globalThis.String(object.nickname) : "",
-      level: isSet(object.level) ? globalThis.Number(object.level) : 0,
-      rating: isSet(object.rating) ? globalThis.Number(object.rating) : 0,
-      experience: isSet(object.experience) ? globalThis.Number(object.experience) : 0,
-    };
-  },
-
-  toJSON(message: ProfileResponse): unknown {
-    const obj: any = {};
-    if (message.profileId !== "") {
-      obj.profileId = message.profileId;
-    }
-    if (message.ownerId !== "") {
-      obj.ownerId = message.ownerId;
-    }
-    if (message.nickname !== "") {
-      obj.nickname = message.nickname;
-    }
-    if (message.level !== 0) {
-      obj.level = Math.round(message.level);
-    }
-    if (message.rating !== 0) {
-      obj.rating = Math.round(message.rating);
-    }
-    if (message.experience !== 0) {
-      obj.experience = Math.round(message.experience);
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<ProfileResponse>): ProfileResponse {
-    return ProfileResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ProfileResponse>): ProfileResponse {
-    const message = createBaseProfileResponse();
-    message.profileId = object.profileId ?? "";
-    message.ownerId = object.ownerId ?? "";
-    message.nickname = object.nickname ?? "";
-    message.level = object.level ?? 0;
-    message.rating = object.rating ?? 0;
-    message.experience = object.experience ?? 0;
-    return message;
-  },
-};
-
-export type ProfileService = typeof ProfileService;
-export const ProfileService = {
-  upsert: {
-    path: "/profile.Profile/Upsert",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: UpsertRequest): Buffer => Buffer.from(UpsertRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpsertRequest => UpsertRequest.decode(value),
-    responseSerialize: (value: ProfileResponse): Buffer => Buffer.from(ProfileResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProfileResponse => ProfileResponse.decode(value),
-  },
-  view: {
-    path: "/profile.Profile/View",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: ViewRequest): Buffer => Buffer.from(ViewRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): ViewRequest => ViewRequest.decode(value),
-    responseSerialize: (value: ProfileResponse): Buffer => Buffer.from(ProfileResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProfileResponse => ProfileResponse.decode(value),
-  },
+export type EngineService = typeof EngineService;
+export const EngineService = {
   health: {
-    path: "/profile.Profile/Health",
+    path: "/mail.Engine/Health",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -810,7 +519,7 @@ export const ProfileService = {
     responseDeserialize: (value: Buffer): HealthReport => HealthReport.decode(value),
   },
   status: {
-    path: "/profile.Profile/Status",
+    path: "/mail.Engine/Status",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -819,7 +528,7 @@ export const ProfileService = {
     responseDeserialize: (value: Buffer): StatusInfo => StatusInfo.decode(value),
   },
   livez: {
-    path: "/profile.Profile/Livez",
+    path: "/mail.Engine/Livez",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -828,7 +537,7 @@ export const ProfileService = {
     responseDeserialize: (value: Buffer): LiveStatus => LiveStatus.decode(value),
   },
   readyz: {
-    path: "/profile.Profile/Readyz",
+    path: "/mail.Engine/Readyz",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -838,46 +547,14 @@ export const ProfileService = {
   },
 } as const;
 
-export interface ProfileServer extends UntypedServiceImplementation {
-  upsert: handleUnaryCall<UpsertRequest, ProfileResponse>;
-  view: handleUnaryCall<ViewRequest, ProfileResponse>;
+export interface EngineServer extends UntypedServiceImplementation {
   health: handleUnaryCall<Empty, HealthReport>;
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
 }
 
-export interface ProfileClient extends Client {
-  upsert(
-    request: UpsertRequest,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
-  upsert(
-    request: UpsertRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
-  upsert(
-    request: UpsertRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
-  view(
-    request: ViewRequest,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
-  view(
-    request: ViewRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
-  view(
-    request: ViewRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
+export interface EngineClient extends Client {
   health(request: Empty, callback: (error: ServiceError | null, response: HealthReport) => void): ClientUnaryCall;
   health(
     request: Empty,
@@ -928,9 +605,9 @@ export interface ProfileClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const ProfileClient = makeGenericClientConstructor(ProfileService, "profile.Profile") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ProfileClient;
-  service: typeof ProfileService;
+export const EngineClient = makeGenericClientConstructor(EngineService, "mail.Engine") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): EngineClient;
+  service: typeof EngineService;
   serviceName: string;
 };
 
@@ -941,17 +618,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-function longToNumber(int64: { toString(): string }): number {
-  const num = globalThis.Number(int64.toString());
-  if (num > globalThis.Number.MAX_SAFE_INTEGER) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  if (num < globalThis.Number.MIN_SAFE_INTEGER) {
-    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
-  }
-  return num;
-}
 
 function isObject(value: any): boolean {
   return typeof value === "object" && value !== null;

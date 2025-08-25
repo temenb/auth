@@ -1,7 +1,7 @@
 FROM node:22
 ENV NODE_ENV=development
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/
 
 COPY shared/logger/ ./shared/logger/
 COPY turbo.json  ./
@@ -11,12 +11,13 @@ COPY services/auth/package*.json ./services/auth/
 COPY services/auth/jest.config.js ./services/auth/
 COPY services/auth/tsconfig.json ./services/auth/
 COPY services/auth/src ./services/auth/src/
+COPY services/auth/prisma ./services/auth/prisma/
 COPY services/auth/__tests__ ./services/auth/__tests__/
 
 USER root
-RUN chown -R node:node /usr/src/app
 
 RUN corepack enable && pnpm install
+RUN chown -R node:node /usr/src/app
 
 USER node
 

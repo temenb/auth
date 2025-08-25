@@ -23,6 +23,7 @@ USER node
 
 RUN pnpm --filter @shared/logger build
 RUN pnpm --filter auth build
+RUN pnpm --filter auth prisma:generate
 
 EXPOSE 3000
 

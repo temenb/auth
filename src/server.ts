@@ -1,7 +1,7 @@
 import server from './app';
 import * as grpc from '@grpc/grpc-js';
 import config from './config/config';
-import { logger } from './utils/logger';
+import { logger } from '@shared/logger';
 
 const PORT = config.port;
 

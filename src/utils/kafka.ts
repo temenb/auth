@@ -1,6 +1,6 @@
 import {Kafka, ProducerRecord, EachMessagePayload, Partitioners, Admin} from 'kafkajs';
 import config from '../config/config'
-import logger from "./logger";
+import logger from "@shared/logger";
 
 let producer: ReturnType<Kafka['producer']>;
 let consumer: ReturnType<Kafka['consumer']>;

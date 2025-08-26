@@ -3,7 +3,7 @@ ENV NODE_ENV=development
 
 WORKDIR /usr/src/app/
 
-COPY shared/logger/ ./shared/logger/
+COPY shared/ ./shared/
 COPY turbo.json  ./
 COPY package.json ./
 COPY pnpm-workspace.yaml ./

@@ -89,8 +89,3 @@ export const resetPassword = async (userId: string) => {
     //     data: { refreshToken: null },
     // });
 };
-
-// export const getProfile = async (userId: string) => {
-//     const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, createdAt: true } });
-//     return user;
-// };

@@ -1,5 +1,5 @@
 import * as authService from '../services/auth.service';
-import { logger } from '../utils/logger';
+import { logger } from '@shared/logger';
 
 export async function seedUsers() {
     // const existing = await db.user.findMany();

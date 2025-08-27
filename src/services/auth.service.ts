@@ -11,11 +11,11 @@ export const createUser = async (email: string, password: string) => {
     // if (existingUser) throw new Error('User already exists');
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-        data: { email, password: hashedPassword },
-    });
+    // const user = await prisma.user.create({
+    //     data: { email, password: hashedPassword },
+    // });
 
-    // const user = await getUser();
+    const user = await getUser();
 
     const producer = await createProducer(kafkaConfig);
     producer.send(createUserProducerConfig, [{ value: JSON.stringify({ ownerId: user.id }) }]);
@@ -24,11 +24,11 @@ export const createUser = async (email: string, password: string) => {
 };
 
 
-// export const getUser = async () => {
-//     const user = await prisma.user.findFirst();
-//     if (!user) throw new Error('No users registered');
-//     return user;
-// }
+export const getUser = async () => {
+    const user = await prisma.user.findFirst();
+    if (!user) throw new Error('No users registered');
+    return user;
+}
 
 export const login = async (email: string, password: string) => {
     const user = await prisma.user.findUnique({ where: { email } });

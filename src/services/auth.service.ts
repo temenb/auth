@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
 import config from '../config/config';
-import { broadcastEvent } from "../utils/kafka";
+// import { broadcastEvent } from "../utils/kafka.old";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +17,7 @@ export const createUser = async (email: string, password: string) => {
 
     const user = await getUser();
 
-    broadcastEvent(config.kafkaTopicUserCreated, [{ value: JSON.stringify({ ownerId: user.id }) }]);
+    // broadcastEvent(config.kafkaTopicUserCreated, [{ value: JSON.stringify({ ownerId: user.id }) }]);
 
     return user;
 };

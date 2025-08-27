@@ -42,6 +42,7 @@
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "morgan": "^1.10.1",
-    "@shared/logger": "workspace:*"
+    "@shared/logger": "workspace:*",
+    "@shared/kafka": "workspace:*"
   }
 }

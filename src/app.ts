@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { AuthService } from './generated/auth';
 import * as grpc from '@grpc/grpc-js';
 import * as authHandler from "./grpc/handlers/auth.handler";
-import {initKafka} from "./utils/kafka";
+// import {initKafka} from "./utils/kafka.old";
 import config from "./config/config";
 
 dotenv.config();
@@ -21,7 +21,5 @@ server.addService(AuthService, {
     livez: authHandler.livez,
     readyz: authHandler.readyz,
 });
-
-initKafka(config.kafkaClientId);
 
 export default server;

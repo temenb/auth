@@ -57,9 +57,7 @@ export const checkPostgres = async (): Promise<boolean> => {
 
 export const checkKafka = async (): Promise<boolean> => {
   try {
-    const { clientId, brokers } = kafkaConfig;
-    const config = { clientId, brokers };
-    const producer = await createProducer(config);
+    const producer = await createProducer(kafkaConfig);
     producer.send({ topic: 'healthcheck' }, [{ value: 'ping' }]);
     return true;
   } catch (err) {

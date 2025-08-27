@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
-import config from '../config/config';
-// import { broadcastEvent } from "../utils/kafka.old";
+import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
+import { createProducer } from '@shared/kafka';
 
 const prisma = new PrismaClient();
 
@@ -11,23 +11,24 @@ export const createUser = async (email: string, password: string) => {
     // if (existingUser) throw new Error('User already exists');
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    // const user = await prisma.user.create({
-    //     data: { email, password: hashedPassword },
-    // });
+    const user = await prisma.user.create({
+        data: { email, password: hashedPassword },
+    });
 
-    const user = await getUser();
+    // const user = await getUser();
 
-    // broadcastEvent(config.kafkaTopicUserCreated, [{ value: JSON.stringify({ ownerId: user.id }) }]);
+    const producer = await createProducer(kafkaConfig);
+    producer.send(createUserProducerConfig, [{ value: JSON.stringify({ ownerId: user.id }) }]);
 
     return user;
 };
 
 
-export const getUser = async () => {
-    const user = await prisma.user.findFirst();
-    if (!user) throw new Error('No users registered');
-    return user;
-}
+// export const getUser = async () => {
+//     const user = await prisma.user.findFirst();
+//     if (!user) throw new Error('No users registered');
+//     return user;
+// }
 
 export const login = async (email: string, password: string) => {
     const user = await prisma.user.findUnique({ where: { email } });

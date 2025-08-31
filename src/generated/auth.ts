@@ -18,37 +18,10 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
+import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "auth";
-
-export interface Empty {
-}
-
-export interface HealthReport {
-  components: { [key: string]: string };
-  healthy: boolean;
-}
-
-export interface HealthReport_ComponentsEntry {
-  key: string;
-  value: string;
-}
-
-export interface StatusInfo {
-  name: string;
-  version: string;
-  uptime: number;
-  env: string;
-  timestamp: string;
-}
-
-export interface LiveStatus {
-  live: boolean;
-}
-
-export interface ReadyStatus {
-  ready: boolean;
-}
 
 export interface RegisterRequest {
   email: string;
@@ -88,462 +61,8 @@ export interface ResetPasswordRequest {
   newPassword: string;
 }
 
-function createBaseEmpty(): Empty {
-  return {};
+export interface getTokenRequest {
 }
-
-export const Empty: MessageFns<Empty> = {
-  encode(_: Empty, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): Empty {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEmpty();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(_: any): Empty {
-    return {};
-  },
-
-  toJSON(_: Empty): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  create(base?: DeepPartial<Empty>): Empty {
-    return Empty.fromPartial(base ?? {});
-  },
-  fromPartial(_: DeepPartial<Empty>): Empty {
-    const message = createBaseEmpty();
-    return message;
-  },
-};
-
-function createBaseHealthReport(): HealthReport {
-  return { components: {}, healthy: false };
-}
-
-export const HealthReport: MessageFns<HealthReport> = {
-  encode(message: HealthReport, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    Object.entries(message.components).forEach(([key, value]) => {
-      HealthReport_ComponentsEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).join();
-    });
-    if (message.healthy !== false) {
-      writer.uint32(16).bool(message.healthy);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): HealthReport {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseHealthReport();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          const entry1 = HealthReport_ComponentsEntry.decode(reader, reader.uint32());
-          if (entry1.value !== undefined) {
-            message.components[entry1.key] = entry1.value;
-          }
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.healthy = reader.bool();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): HealthReport {
-    return {
-      components: isObject(object.components)
-        ? Object.entries(object.components).reduce<{ [key: string]: string }>((acc, [key, value]) => {
-          acc[key] = String(value);
-          return acc;
-        }, {})
-        : {},
-      healthy: isSet(object.healthy) ? globalThis.Boolean(object.healthy) : false,
-    };
-  },
-
-  toJSON(message: HealthReport): unknown {
-    const obj: any = {};
-    if (message.components) {
-      const entries = Object.entries(message.components);
-      if (entries.length > 0) {
-        obj.components = {};
-        entries.forEach(([k, v]) => {
-          obj.components[k] = v;
-        });
-      }
-    }
-    if (message.healthy !== false) {
-      obj.healthy = message.healthy;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<HealthReport>): HealthReport {
-    return HealthReport.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<HealthReport>): HealthReport {
-    const message = createBaseHealthReport();
-    message.components = Object.entries(object.components ?? {}).reduce<{ [key: string]: string }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[key] = globalThis.String(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    message.healthy = object.healthy ?? false;
-    return message;
-  },
-};
-
-function createBaseHealthReport_ComponentsEntry(): HealthReport_ComponentsEntry {
-  return { key: "", value: "" };
-}
-
-export const HealthReport_ComponentsEntry: MessageFns<HealthReport_ComponentsEntry> = {
-  encode(message: HealthReport_ComponentsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== "") {
-      writer.uint32(18).string(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): HealthReport_ComponentsEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseHealthReport_ComponentsEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): HealthReport_ComponentsEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? globalThis.String(object.value) : "",
-    };
-  },
-
-  toJSON(message: HealthReport_ComponentsEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== "") {
-      obj.value = message.value;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<HealthReport_ComponentsEntry>): HealthReport_ComponentsEntry {
-    return HealthReport_ComponentsEntry.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<HealthReport_ComponentsEntry>): HealthReport_ComponentsEntry {
-    const message = createBaseHealthReport_ComponentsEntry();
-    message.key = object.key ?? "";
-    message.value = object.value ?? "";
-    return message;
-  },
-};
-
-function createBaseStatusInfo(): StatusInfo {
-  return { name: "", version: "", uptime: 0, env: "", timestamp: "" };
-}
-
-export const StatusInfo: MessageFns<StatusInfo> = {
-  encode(message: StatusInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
-    }
-    if (message.version !== "") {
-      writer.uint32(18).string(message.version);
-    }
-    if (message.uptime !== 0) {
-      writer.uint32(33).double(message.uptime);
-    }
-    if (message.env !== "") {
-      writer.uint32(42).string(message.env);
-    }
-    if (message.timestamp !== "") {
-      writer.uint32(50).string(message.timestamp);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): StatusInfo {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseStatusInfo();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.version = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 33) {
-            break;
-          }
-
-          message.uptime = reader.double();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.env = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.timestamp = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): StatusInfo {
-    return {
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      version: isSet(object.version) ? globalThis.String(object.version) : "",
-      uptime: isSet(object.uptime) ? globalThis.Number(object.uptime) : 0,
-      env: isSet(object.env) ? globalThis.String(object.env) : "",
-      timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "",
-    };
-  },
-
-  toJSON(message: StatusInfo): unknown {
-    const obj: any = {};
-    if (message.name !== "") {
-      obj.name = message.name;
-    }
-    if (message.version !== "") {
-      obj.version = message.version;
-    }
-    if (message.uptime !== 0) {
-      obj.uptime = message.uptime;
-    }
-    if (message.env !== "") {
-      obj.env = message.env;
-    }
-    if (message.timestamp !== "") {
-      obj.timestamp = message.timestamp;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<StatusInfo>): StatusInfo {
-    return StatusInfo.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<StatusInfo>): StatusInfo {
-    const message = createBaseStatusInfo();
-    message.name = object.name ?? "";
-    message.version = object.version ?? "";
-    message.uptime = object.uptime ?? 0;
-    message.env = object.env ?? "";
-    message.timestamp = object.timestamp ?? "";
-    return message;
-  },
-};
-
-function createBaseLiveStatus(): LiveStatus {
-  return { live: false };
-}
-
-export const LiveStatus: MessageFns<LiveStatus> = {
-  encode(message: LiveStatus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.live !== false) {
-      writer.uint32(8).bool(message.live);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): LiveStatus {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseLiveStatus();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.live = reader.bool();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): LiveStatus {
-    return { live: isSet(object.live) ? globalThis.Boolean(object.live) : false };
-  },
-
-  toJSON(message: LiveStatus): unknown {
-    const obj: any = {};
-    if (message.live !== false) {
-      obj.live = message.live;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<LiveStatus>): LiveStatus {
-    return LiveStatus.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<LiveStatus>): LiveStatus {
-    const message = createBaseLiveStatus();
-    message.live = object.live ?? false;
-    return message;
-  },
-};
-
-function createBaseReadyStatus(): ReadyStatus {
-  return { ready: false };
-}
-
-export const ReadyStatus: MessageFns<ReadyStatus> = {
-  encode(message: ReadyStatus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.ready !== false) {
-      writer.uint32(8).bool(message.ready);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ReadyStatus {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseReadyStatus();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.ready = reader.bool();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ReadyStatus {
-    return { ready: isSet(object.ready) ? globalThis.Boolean(object.ready) : false };
-  },
-
-  toJSON(message: ReadyStatus): unknown {
-    const obj: any = {};
-    if (message.ready !== false) {
-      obj.ready = message.ready;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<ReadyStatus>): ReadyStatus {
-    return ReadyStatus.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ReadyStatus>): ReadyStatus {
-    const message = createBaseReadyStatus();
-    message.ready = object.ready ?? false;
-    return message;
-  },
-};
 
 function createBaseRegisterRequest(): RegisterRequest {
   return { email: "", password: "" };
@@ -1115,14 +634,102 @@ export const ResetPasswordRequest: MessageFns<ResetPasswordRequest> = {
   },
 };
 
+function createBasegetTokenRequest(): getTokenRequest {
+  return {};
+}
+
+export const getTokenRequest: MessageFns<getTokenRequest> = {
+  encode(_: getTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): getTokenRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasegetTokenRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): getTokenRequest {
+    return {};
+  },
+
+  toJSON(_: getTokenRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create(base?: DeepPartial<getTokenRequest>): getTokenRequest {
+    return getTokenRequest.fromPartial(base ?? {});
+  },
+  fromPartial(_: DeepPartial<getTokenRequest>): getTokenRequest {
+    const message = createBasegetTokenRequest();
+    return message;
+  },
+};
+
 export type AuthService = typeof AuthService;
 export const AuthService = {
+  health: {
+    path: "/auth.Auth/Health",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
+    responseSerialize: (value: HealthReport): Buffer => Buffer.from(HealthReport.encode(value).finish()),
+    responseDeserialize: (value: Buffer): HealthReport => HealthReport.decode(value),
+  },
+  status: {
+    path: "/auth.Auth/Status",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
+    responseSerialize: (value: StatusInfo): Buffer => Buffer.from(StatusInfo.encode(value).finish()),
+    responseDeserialize: (value: Buffer): StatusInfo => StatusInfo.decode(value),
+  },
+  livez: {
+    path: "/auth.Auth/Livez",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
+    responseSerialize: (value: LiveStatus): Buffer => Buffer.from(LiveStatus.encode(value).finish()),
+    responseDeserialize: (value: Buffer): LiveStatus => LiveStatus.decode(value),
+  },
+  readyz: {
+    path: "/auth.Auth/Readyz",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
+    responseSerialize: (value: ReadyStatus): Buffer => Buffer.from(ReadyStatus.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ReadyStatus => ReadyStatus.decode(value),
+  },
   register: {
     path: "/auth.Auth/Register",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: RegisterRequest): Buffer => Buffer.from(RegisterRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): RegisterRequest => RegisterRequest.decode(value),
+    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+  },
+  anonymousSignIn: {
+    path: "/auth.Auth/AnonymousSignIn",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
@@ -1172,58 +779,81 @@ export const AuthService = {
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
-  health: {
-    path: "/auth.Auth/Health",
+  getToken: {
+    path: "/auth.Auth/getToken",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: HealthReport): Buffer => Buffer.from(HealthReport.encode(value).finish()),
-    responseDeserialize: (value: Buffer): HealthReport => HealthReport.decode(value),
-  },
-  status: {
-    path: "/auth.Auth/Status",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: StatusInfo): Buffer => Buffer.from(StatusInfo.encode(value).finish()),
-    responseDeserialize: (value: Buffer): StatusInfo => StatusInfo.decode(value),
-  },
-  livez: {
-    path: "/auth.Auth/Livez",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: LiveStatus): Buffer => Buffer.from(LiveStatus.encode(value).finish()),
-    responseDeserialize: (value: Buffer): LiveStatus => LiveStatus.decode(value),
-  },
-  readyz: {
-    path: "/auth.Auth/Readyz",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: ReadyStatus): Buffer => Buffer.from(ReadyStatus.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ReadyStatus => ReadyStatus.decode(value),
+    requestSerialize: (value: getTokenRequest): Buffer => Buffer.from(getTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): getTokenRequest => getTokenRequest.decode(value),
+    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
 } as const;
 
 export interface AuthServer extends UntypedServiceImplementation {
+  health: handleUnaryCall<Empty, HealthReport>;
+  status: handleUnaryCall<Empty, StatusInfo>;
+  livez: handleUnaryCall<Empty, LiveStatus>;
+  readyz: handleUnaryCall<Empty, ReadyStatus>;
   register: handleUnaryCall<RegisterRequest, AuthResponse>;
+  anonymousSignIn: handleUnaryCall<Empty, AuthResponse>;
   login: handleUnaryCall<LoginRequest, AuthResponse>;
   logout: handleUnaryCall<LogoutRequest, LogoutResponse>;
   refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthResponse>;
   forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty>;
   resetPassword: handleUnaryCall<ResetPasswordRequest, AuthResponse>;
-  health: handleUnaryCall<Empty, HealthReport>;
-  status: handleUnaryCall<Empty, StatusInfo>;
-  livez: handleUnaryCall<Empty, LiveStatus>;
-  readyz: handleUnaryCall<Empty, ReadyStatus>;
+  getToken: handleUnaryCall<getTokenRequest, AuthResponse>;
 }
 
 export interface AuthClient extends Client {
+  health(request: Empty, callback: (error: ServiceError | null, response: HealthReport) => void): ClientUnaryCall;
+  health(
+    request: Empty,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: HealthReport) => void,
+  ): ClientUnaryCall;
+  health(
+    request: Empty,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: HealthReport) => void,
+  ): ClientUnaryCall;
+  status(request: Empty, callback: (error: ServiceError | null, response: StatusInfo) => void): ClientUnaryCall;
+  status(
+    request: Empty,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: StatusInfo) => void,
+  ): ClientUnaryCall;
+  status(
+    request: Empty,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: StatusInfo) => void,
+  ): ClientUnaryCall;
+  livez(request: Empty, callback: (error: ServiceError | null, response: LiveStatus) => void): ClientUnaryCall;
+  livez(
+    request: Empty,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: LiveStatus) => void,
+  ): ClientUnaryCall;
+  livez(
+    request: Empty,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: LiveStatus) => void,
+  ): ClientUnaryCall;
+  readyz(request: Empty, callback: (error: ServiceError | null, response: ReadyStatus) => void): ClientUnaryCall;
+  readyz(
+    request: Empty,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ReadyStatus) => void,
+  ): ClientUnaryCall;
+  readyz(
+    request: Empty,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ReadyStatus) => void,
+  ): ClientUnaryCall;
   register(
     request: RegisterRequest,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
@@ -1235,6 +865,21 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   register(
     request: RegisterRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  anonymousSignIn(
+    request: Empty,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  anonymousSignIn(
+    request: Empty,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  anonymousSignIn(
+    request: Empty,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
@@ -1311,53 +956,20 @@ export interface AuthClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
-  health(request: Empty, callback: (error: ServiceError | null, response: HealthReport) => void): ClientUnaryCall;
-  health(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: HealthReport) => void,
+  getToken(
+    request: getTokenRequest,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
-  health(
-    request: Empty,
+  getToken(
+    request: getTokenRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  getToken(
+    request: getTokenRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: HealthReport) => void,
-  ): ClientUnaryCall;
-  status(request: Empty, callback: (error: ServiceError | null, response: StatusInfo) => void): ClientUnaryCall;
-  status(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: StatusInfo) => void,
-  ): ClientUnaryCall;
-  status(
-    request: Empty,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: StatusInfo) => void,
-  ): ClientUnaryCall;
-  livez(request: Empty, callback: (error: ServiceError | null, response: LiveStatus) => void): ClientUnaryCall;
-  livez(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: LiveStatus) => void,
-  ): ClientUnaryCall;
-  livez(
-    request: Empty,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: LiveStatus) => void,
-  ): ClientUnaryCall;
-  readyz(request: Empty, callback: (error: ServiceError | null, response: ReadyStatus) => void): ClientUnaryCall;
-  readyz(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: ReadyStatus) => void,
-  ): ClientUnaryCall;
-  readyz(
-    request: Empty,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ReadyStatus) => void,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
 }
 
@@ -1374,10 +986,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-function isObject(value: any): boolean {
-  return typeof value === "object" && value !== null;
-}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

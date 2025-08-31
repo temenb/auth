@@ -11,6 +11,7 @@ const server = new grpc.Server();
 
 server.addService(AuthService, {
     register: authHandler.register,
+    anonymousSignIn: authHandler.anonymousSignIn,
     login: authHandler.login,
     refreshTokens: authHandler.refreshTokens,
     logout: authHandler.logout,

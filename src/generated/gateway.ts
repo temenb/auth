@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.7.7
 //   protoc               v6.32.0
-// source: mail.proto
+// source: gateway.proto
 
 /* eslint-disable */
 import {
@@ -17,15 +17,16 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { AuthResponse, getTokenRequest } from "./auth";
 import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
 import { Empty } from "./google/protobuf/empty";
 
-export const protobufPackage = "mail";
+export const protobufPackage = "gateway";
 
-export type MailService = typeof MailService;
-export const MailService = {
+export type GatewayService = typeof GatewayService;
+export const GatewayService = {
   health: {
-    path: "/mail.Mail/Health",
+    path: "/gateway.Gateway/Health",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -34,7 +35,7 @@ export const MailService = {
     responseDeserialize: (value: Buffer): HealthReport => HealthReport.decode(value),
   },
   status: {
-    path: "/mail.Mail/Status",
+    path: "/gateway.Gateway/Status",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -43,7 +44,7 @@ export const MailService = {
     responseDeserialize: (value: Buffer): StatusInfo => StatusInfo.decode(value),
   },
   livez: {
-    path: "/mail.Mail/Livez",
+    path: "/gateway.Gateway/Livez",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -52,7 +53,7 @@ export const MailService = {
     responseDeserialize: (value: Buffer): LiveStatus => LiveStatus.decode(value),
   },
   readyz: {
-    path: "/mail.Mail/Readyz",
+    path: "/gateway.Gateway/Readyz",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -60,16 +61,26 @@ export const MailService = {
     responseSerialize: (value: ReadyStatus): Buffer => Buffer.from(ReadyStatus.encode(value).finish()),
     responseDeserialize: (value: Buffer): ReadyStatus => ReadyStatus.decode(value),
   },
+  getToken: {
+    path: "/gateway.Gateway/getToken",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: getTokenRequest): Buffer => Buffer.from(getTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): getTokenRequest => getTokenRequest.decode(value),
+    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+  },
 } as const;
 
-export interface MailServer extends UntypedServiceImplementation {
+export interface GatewayServer extends UntypedServiceImplementation {
   health: handleUnaryCall<Empty, HealthReport>;
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
+  getToken: handleUnaryCall<getTokenRequest, AuthResponse>;
 }
 
-export interface MailClient extends Client {
+export interface GatewayClient extends Client {
   health(request: Empty, callback: (error: ServiceError | null, response: HealthReport) => void): ClientUnaryCall;
   health(
     request: Empty,
@@ -118,10 +129,25 @@ export interface MailClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ReadyStatus) => void,
   ): ClientUnaryCall;
+  getToken(
+    request: getTokenRequest,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  getToken(
+    request: getTokenRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
+  getToken(
+    request: getTokenRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
+  ): ClientUnaryCall;
 }
 
-export const MailClient = makeGenericClientConstructor(MailService, "mail.Mail") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): MailClient;
-  service: typeof MailService;
+export const GatewayClient = makeGenericClientConstructor(GatewayService, "gateway.Gateway") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): GatewayClient;
+  service: typeof GatewayService;
   serviceName: string;
 };

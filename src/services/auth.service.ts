@@ -3,19 +3,18 @@ import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/token';
 import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
 import { createProducer } from '@shared/kafka';
+import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
 export const createUser = async (email: string, password: string) => {
     const existingUser = await prisma.user.findUnique({ where: { email } });
-    // if (existingUser) throw new Error('User already exists');
+    if (existingUser) throw new Error('User already exists');
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
         data: { email, password: hashedPassword },
     });
-
-    // const user = await getUser();
 
     const producer = await createProducer(kafkaConfig);
     producer.send(createUserProducerConfig, [{ value: JSON.stringify({ ownerId: user.id }) }]);
@@ -23,12 +22,25 @@ export const createUser = async (email: string, password: string) => {
     return user;
 };
 
+export const anonymousSignIn = async () => {
+    const user = await prisma.user.create({
+        data: { email: randomUUID() },
+    });
 
-export const getUser = async () => {
-    const user = await prisma.user.findFirst();
-    if (!user) throw new Error('No users registered');
-    return user;
-}
+    const producer = await createProducer(kafkaConfig);
+    producer.send(createUserProducerConfig, [{ value: JSON.stringify({ ownerId: user.id }) }]);
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+    const userId = user.id;
+
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { refreshToken },
+    });
+
+    return { accessToken, refreshToken, userId };
+};
 
 export const login = async (email: string, password: string) => {
     const user = await prisma.user.findUnique({ where: { email } });

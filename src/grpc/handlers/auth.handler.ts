@@ -12,6 +12,7 @@ export const register = async (
     call: grpc.ServerUnaryCall<AuthGrpc.RegisterRequest, AuthGrpc.AuthResponse>,
     callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
 ) => {
+    throw new Error('Registration is disabled');
     const { email, password } = call.request;
 
     try {
@@ -26,10 +27,25 @@ export const register = async (
     }
 };
 
+export const anonymousSignIn = async (
+    call: grpc.ServerUnaryCall<AuthGrpc.Empty, AuthGrpc.AuthResponse>,
+    callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
+) => {
+    try {
+        const result = await authService.anonymousSignIn();
+
+        callback(null, result);
+
+    } catch (err: any) {
+        callbackError(callback, err);
+    }
+};
+
 export const login = async (
     call: grpc.ServerUnaryCall<AuthGrpc.LoginRequest, AuthGrpc.AuthResponse>,
     callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
 ) => {
+    throw new Error('Login is disabled');
     const { email, password } = call.request;
 
     try {

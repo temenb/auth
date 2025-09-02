@@ -18,8 +18,8 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Empty } from "./common/empty";
 import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
-import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "profile";
 

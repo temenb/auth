@@ -17,9 +17,9 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
-import { AuthResponse, getTokenRequest } from "./auth";
+import { AuthResponse, GetTokenRequest } from "./auth";
+import { Empty } from "./common/empty";
 import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
-import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "gateway";
 
@@ -65,8 +65,8 @@ export const GatewayService = {
     path: "/gateway.Gateway/getToken",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: getTokenRequest): Buffer => Buffer.from(getTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): getTokenRequest => getTokenRequest.decode(value),
+    requestSerialize: (value: GetTokenRequest): Buffer => Buffer.from(GetTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetTokenRequest => GetTokenRequest.decode(value),
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
@@ -77,7 +77,7 @@ export interface GatewayServer extends UntypedServiceImplementation {
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
-  getToken: handleUnaryCall<getTokenRequest, AuthResponse>;
+  getToken: handleUnaryCall<GetTokenRequest, AuthResponse>;
 }
 
 export interface GatewayClient extends Client {
@@ -130,16 +130,16 @@ export interface GatewayClient extends Client {
     callback: (error: ServiceError | null, response: ReadyStatus) => void,
   ): ClientUnaryCall;
   getToken(
-    request: getTokenRequest,
+    request: GetTokenRequest,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   getToken(
-    request: getTokenRequest,
+    request: GetTokenRequest,
     metadata: Metadata,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   getToken(
-    request: getTokenRequest,
+    request: GetTokenRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,

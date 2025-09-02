@@ -18,8 +18,8 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Empty } from "./common/empty";
 import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
-import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "auth";
 
@@ -61,7 +61,8 @@ export interface ResetPasswordRequest {
   newPassword: string;
 }
 
-export interface getTokenRequest {
+export interface GetTokenRequest {
+  deviceId: string;
 }
 
 function createBaseRegisterRequest(): RegisterRequest {
@@ -634,22 +635,33 @@ export const ResetPasswordRequest: MessageFns<ResetPasswordRequest> = {
   },
 };
 
-function createBasegetTokenRequest(): getTokenRequest {
-  return {};
+function createBaseGetTokenRequest(): GetTokenRequest {
+  return { deviceId: "" };
 }
 
-export const getTokenRequest: MessageFns<getTokenRequest> = {
-  encode(_: getTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetTokenRequest: MessageFns<GetTokenRequest> = {
+  encode(message: GetTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.deviceId !== "") {
+      writer.uint32(10).string(message.deviceId);
+    }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): getTokenRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetTokenRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasegetTokenRequest();
+    const message = createBaseGetTokenRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.deviceId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -659,20 +671,24 @@ export const getTokenRequest: MessageFns<getTokenRequest> = {
     return message;
   },
 
-  fromJSON(_: any): getTokenRequest {
-    return {};
+  fromJSON(object: any): GetTokenRequest {
+    return { deviceId: isSet(object.deviceId) ? globalThis.String(object.deviceId) : "" };
   },
 
-  toJSON(_: getTokenRequest): unknown {
+  toJSON(message: GetTokenRequest): unknown {
     const obj: any = {};
+    if (message.deviceId !== "") {
+      obj.deviceId = message.deviceId;
+    }
     return obj;
   },
 
-  create(base?: DeepPartial<getTokenRequest>): getTokenRequest {
-    return getTokenRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<GetTokenRequest>): GetTokenRequest {
+    return GetTokenRequest.fromPartial(base ?? {});
   },
-  fromPartial(_: DeepPartial<getTokenRequest>): getTokenRequest {
-    const message = createBasegetTokenRequest();
+  fromPartial(object: DeepPartial<GetTokenRequest>): GetTokenRequest {
+    const message = createBaseGetTokenRequest();
+    message.deviceId = object.deviceId ?? "";
     return message;
   },
 };
@@ -780,11 +796,11 @@ export const AuthService = {
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
   getToken: {
-    path: "/auth.Auth/getToken",
+    path: "/auth.Auth/GetToken",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: getTokenRequest): Buffer => Buffer.from(getTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): getTokenRequest => getTokenRequest.decode(value),
+    requestSerialize: (value: GetTokenRequest): Buffer => Buffer.from(GetTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetTokenRequest => GetTokenRequest.decode(value),
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
@@ -802,7 +818,7 @@ export interface AuthServer extends UntypedServiceImplementation {
   refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthResponse>;
   forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty>;
   resetPassword: handleUnaryCall<ResetPasswordRequest, AuthResponse>;
-  getToken: handleUnaryCall<getTokenRequest, AuthResponse>;
+  getToken: handleUnaryCall<GetTokenRequest, AuthResponse>;
 }
 
 export interface AuthClient extends Client {
@@ -957,16 +973,16 @@ export interface AuthClient extends Client {
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   getToken(
-    request: getTokenRequest,
+    request: GetTokenRequest,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   getToken(
-    request: getTokenRequest,
+    request: GetTokenRequest,
     metadata: Metadata,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   getToken(
-    request: getTokenRequest,
+    request: GetTokenRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,

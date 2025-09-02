@@ -1,5 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as AuthGrpc from '../../generated/auth';
+import * as HealthGrpc from '../../generated//common/health';
+import * as EmptyGrpc from '../../generated//common/empty';
 import * as authService from '../../services/auth.service';
 import * as heathService from '../../services/health.service';
 
@@ -28,7 +30,7 @@ export const register = async (
 };
 
 export const anonymousSignIn = async (
-    call: grpc.ServerUnaryCall<AuthGrpc.Empty, AuthGrpc.AuthResponse>,
+    call: grpc.ServerUnaryCall<EmptyGrpc.Empty, AuthGrpc.AuthResponse>,
     callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
 ) => {
     try {
@@ -91,8 +93,8 @@ export const logout = async (
 };
 
 export const health = async (
-    call: grpc.ServerUnaryCall<AuthGrpc.Empty, AuthGrpc.HealthReport>,
-    callback: grpc.sendUnaryData<AuthGrpc.HealthReport>
+    call: grpc.ServerUnaryCall<EmptyGrpc.Empty, HealthGrpc.HealthReport>,
+    callback: grpc.sendUnaryData<HealthGrpc.HealthReport>
 ) => {
     try {
         const response = await heathService.health();
@@ -105,8 +107,8 @@ export const health = async (
 };
 
 export const status = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.Empty, AuthGrpc.StatusInfo>,
-  callback: grpc.sendUnaryData<AuthGrpc.StatusInfo>
+  call: grpc.ServerUnaryCall<EmptyGrpc.Empty, HealthGrpc.StatusInfo>,
+  callback: grpc.sendUnaryData<HealthGrpc.StatusInfo>
 ) => {
     try {
         const response = await heathService.status();
@@ -119,8 +121,8 @@ export const status = async (
 };
 
 export const livez = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.Empty, AuthGrpc.LiveStatus>,
-  callback: grpc.sendUnaryData<AuthGrpc.LiveStatus>
+  call: grpc.ServerUnaryCall<EmptyGrpc.Empty, HealthGrpc.LiveStatus>,
+  callback: grpc.sendUnaryData<HealthGrpc.LiveStatus>
 ) => {
     try {
         const response = await heathService.livez();
@@ -133,8 +135,8 @@ export const livez = async (
 };
 
 export const readyz = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.Empty, AuthGrpc.ReadyStatus>,
-  callback: grpc.sendUnaryData<AuthGrpc.ReadyStatus>
+  call: grpc.ServerUnaryCall<EmptyGrpc.Empty, HealthGrpc.ReadyStatus>,
+  callback: grpc.sendUnaryData<HealthGrpc.ReadyStatus>
 ) => {
     try {
         const response = await heathService.readyz();

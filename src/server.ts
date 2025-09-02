@@ -1,14 +1,14 @@
 import server from './app';
 import * as grpc from '@grpc/grpc-js';
 import config from './config/config';
-import { logger } from '@shared/logger';
+import {logger} from '@shared/logger';
 
 const PORT = config.port;
 
 server.bindAsync(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure(), () => {
-    logger.log(`🚀 gRPC server running on port ${PORT}`);
+  logger.log(`🚀 gRPC server running on port ${PORT}`);
 });
 
 server.tryShutdown(() => {
-    console.log('✅ gRPC server gracefully shut down');
+  console.log('✅ gRPC server gracefully shut down');
 });

@@ -61,7 +61,7 @@ export interface ResetPasswordRequest {
   newPassword: string;
 }
 
-export interface GetTokenRequest {
+export interface AnonymousSignInRequest {
   deviceId: string;
 }
 
@@ -635,22 +635,22 @@ export const ResetPasswordRequest: MessageFns<ResetPasswordRequest> = {
   },
 };
 
-function createBaseGetTokenRequest(): GetTokenRequest {
+function createBaseAnonymousSignInRequest(): AnonymousSignInRequest {
   return { deviceId: "" };
 }
 
-export const GetTokenRequest: MessageFns<GetTokenRequest> = {
-  encode(message: GetTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AnonymousSignInRequest: MessageFns<AnonymousSignInRequest> = {
+  encode(message: AnonymousSignInRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.deviceId !== "") {
       writer.uint32(10).string(message.deviceId);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetTokenRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): AnonymousSignInRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetTokenRequest();
+    const message = createBaseAnonymousSignInRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -671,11 +671,11 @@ export const GetTokenRequest: MessageFns<GetTokenRequest> = {
     return message;
   },
 
-  fromJSON(object: any): GetTokenRequest {
+  fromJSON(object: any): AnonymousSignInRequest {
     return { deviceId: isSet(object.deviceId) ? globalThis.String(object.deviceId) : "" };
   },
 
-  toJSON(message: GetTokenRequest): unknown {
+  toJSON(message: AnonymousSignInRequest): unknown {
     const obj: any = {};
     if (message.deviceId !== "") {
       obj.deviceId = message.deviceId;
@@ -683,11 +683,11 @@ export const GetTokenRequest: MessageFns<GetTokenRequest> = {
     return obj;
   },
 
-  create(base?: DeepPartial<GetTokenRequest>): GetTokenRequest {
-    return GetTokenRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<AnonymousSignInRequest>): AnonymousSignInRequest {
+    return AnonymousSignInRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<GetTokenRequest>): GetTokenRequest {
-    const message = createBaseGetTokenRequest();
+  fromPartial(object: DeepPartial<AnonymousSignInRequest>): AnonymousSignInRequest {
+    const message = createBaseAnonymousSignInRequest();
     message.deviceId = object.deviceId ?? "";
     return message;
   },
@@ -740,15 +740,6 @@ export const AuthService = {
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
-  anonymousSignIn: {
-    path: "/auth.Auth/AnonymousSignIn",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
-  },
   login: {
     path: "/auth.Auth/Login",
     requestStream: false,
@@ -795,12 +786,13 @@ export const AuthService = {
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
-  getToken: {
-    path: "/auth.Auth/GetToken",
+  anonymousSignIn: {
+    path: "/auth.Auth/AnonymousSignIn",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetTokenRequest): Buffer => Buffer.from(GetTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetTokenRequest => GetTokenRequest.decode(value),
+    requestSerialize: (value: AnonymousSignInRequest): Buffer =>
+      Buffer.from(AnonymousSignInRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): AnonymousSignInRequest => AnonymousSignInRequest.decode(value),
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
@@ -812,13 +804,12 @@ export interface AuthServer extends UntypedServiceImplementation {
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
   register: handleUnaryCall<RegisterRequest, AuthResponse>;
-  anonymousSignIn: handleUnaryCall<Empty, AuthResponse>;
   login: handleUnaryCall<LoginRequest, AuthResponse>;
   logout: handleUnaryCall<LogoutRequest, LogoutResponse>;
   refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthResponse>;
   forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty>;
   resetPassword: handleUnaryCall<ResetPasswordRequest, AuthResponse>;
-  getToken: handleUnaryCall<GetTokenRequest, AuthResponse>;
+  anonymousSignIn: handleUnaryCall<AnonymousSignInRequest, AuthResponse>;
 }
 
 export interface AuthClient extends Client {
@@ -881,21 +872,6 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   register(
     request: RegisterRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
-  ): ClientUnaryCall;
-  anonymousSignIn(
-    request: Empty,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
-  ): ClientUnaryCall;
-  anonymousSignIn(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
-  ): ClientUnaryCall;
-  anonymousSignIn(
-    request: Empty,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
@@ -972,17 +948,17 @@ export interface AuthClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
-  getToken(
-    request: GetTokenRequest,
+  anonymousSignIn(
+    request: AnonymousSignInRequest,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
-  getToken(
-    request: GetTokenRequest,
+  anonymousSignIn(
+    request: AnonymousSignInRequest,
     metadata: Metadata,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
-  getToken(
-    request: GetTokenRequest,
+  anonymousSignIn(
+    request: AnonymousSignInRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,

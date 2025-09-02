@@ -1,7 +1,7 @@
 import logger from "@shared/logger";
 import prisma from '../utils/prisma';
 import kafkaConfig from "../config/kafka.config";
-import { createProducer } from '@shared/kafka';
+import {createProducer} from '@shared/kafka';
 
 const startedAt = Date.now();
 
@@ -58,7 +58,7 @@ export const checkPostgres = async (): Promise<boolean> => {
 export const checkKafka = async (): Promise<boolean> => {
   try {
     const producer = await createProducer(kafkaConfig);
-    producer.send({ topic: 'healthcheck' }, [{ value: 'ping' }]);
+    producer.send({topic: 'healthcheck'}, [{value: 'ping'}]);
     return true;
   } catch (err) {
     logger.error('❌ Kafka health check failed:', err);

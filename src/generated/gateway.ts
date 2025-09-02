@@ -17,7 +17,7 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
-import { AuthResponse, GetTokenRequest } from "./auth";
+import { AnonymousSignInRequest, AuthResponse } from "./auth";
 import { Empty } from "./common/empty";
 import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
 
@@ -61,12 +61,13 @@ export const GatewayService = {
     responseSerialize: (value: ReadyStatus): Buffer => Buffer.from(ReadyStatus.encode(value).finish()),
     responseDeserialize: (value: Buffer): ReadyStatus => ReadyStatus.decode(value),
   },
-  getToken: {
-    path: "/gateway.Gateway/getToken",
+  anonymousSignIn: {
+    path: "/gateway.Gateway/AnonymousSignIn",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetTokenRequest): Buffer => Buffer.from(GetTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetTokenRequest => GetTokenRequest.decode(value),
+    requestSerialize: (value: AnonymousSignInRequest): Buffer =>
+      Buffer.from(AnonymousSignInRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): AnonymousSignInRequest => AnonymousSignInRequest.decode(value),
     responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
@@ -77,7 +78,7 @@ export interface GatewayServer extends UntypedServiceImplementation {
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
-  getToken: handleUnaryCall<GetTokenRequest, AuthResponse>;
+  anonymousSignIn: handleUnaryCall<AnonymousSignInRequest, AuthResponse>;
 }
 
 export interface GatewayClient extends Client {
@@ -129,17 +130,17 @@ export interface GatewayClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ReadyStatus) => void,
   ): ClientUnaryCall;
-  getToken(
-    request: GetTokenRequest,
+  anonymousSignIn(
+    request: AnonymousSignInRequest,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
-  getToken(
-    request: GetTokenRequest,
+  anonymousSignIn(
+    request: AnonymousSignInRequest,
     metadata: Metadata,
     callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
-  getToken(
-    request: GetTokenRequest,
+  anonymousSignIn(
+    request: AnonymousSignInRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponse) => void,

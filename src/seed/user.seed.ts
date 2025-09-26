@@ -13,7 +13,13 @@ export async function seedUsers() {
     }))
   );
 
-  await prisma.user.createMany({data: users});
+  // Создаём пользователей только если их ещё нет
+  for (const user of users) {
+    const exists = await prisma.user.findUnique({ where: { id: user.id } });
+    if (!exists) {
+      await prisma.user.create({ data: user });
+    }
+  }
 
   logger.log('👤 Users are created');
 }

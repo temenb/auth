@@ -30,10 +30,6 @@ USER node
 
 EXPOSE 3000
 
-RUN rm -Rf ./shared/logger/
-#RUN rm services/auth/.env
-
-
 CMD ["pnpm", "--filter", "auth", "start"]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \

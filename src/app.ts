@@ -1,25 +1,44 @@
 import dotenv from 'dotenv';
-import {AuthService} from './generated/auth';
+import grpcServer from './grpc/server';
 import * as grpc from '@grpc/grpc-js';
-import * as authHandler from "./grpc/handlers/auth.handler";
-// import {initKafka} from "./utils/kafka.old";
+import logger from '@shared/logger';
 
 dotenv.config();
 
-const server = new grpc.Server();
+const GRPC_PORT = process.env.GRPC_PORT ?? '3000';
 
-server.addService(AuthService, {
-  register: authHandler.register,
-  anonymousSignIn: authHandler.anonymousSignIn,
-  login: authHandler.login,
-  refreshTokens: authHandler.refreshTokens,
-  logout: authHandler.logout,
-  // forgotPassword: authHandler.forgotPassword,
-  // resetPassword: authHandler.resetPassword,
-  health: authHandler.health,
-  status: authHandler.status,
-  livez: authHandler.livez,
-  readyz: authHandler.readyz,
-});
+async function startGrpc() {
+  return new Promise<void>((resolve, reject) => {
+    grpcServer.bindAsync(
+      `0.0.0.0:${GRPC_PORT}`,
+      grpc.ServerCredentials.createInsecure(),
+      (err, port) => {
+        if (err) {
+          logger.error('❌ Ошибка запуска gRPC:', err);
+          return reject(err);
+        }
+        grpcServer.start();
+        logger.info(`🟢 gRPC сервер запущен на порту ${port}`);
+        resolve();
+      }
+    );
+  });
+}
 
-export default server;
+async function bootstrap() {
+  try {
+    await Promise.all([startGrpc()]);
+    logger.info('🚀 Auth успешно запущен: gRPC');
+  } catch (err) {
+    logger.error('💥 Ошибка запуска Auth:', err);
+    process.exit(1);
+  }
+
+  process.on('SIGINT', () => {
+    logger.info('🛑 Завершение работы...');
+    grpcServer.forceShutdown();
+    process.exit(0);
+  });
+}
+
+bootstrap();

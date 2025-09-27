@@ -86,11 +86,7 @@ export interface AsteroidObject {
 }
 
 export interface GetAsteroidRequest {
-  asteroidId: string;
-}
-
-export interface GetAsteroidResponse {
-  asteroid: AsteroidObject | undefined;
+  id: string;
 }
 
 export interface ListGalaxiesResponse {
@@ -368,13 +364,13 @@ export const AsteroidObject: MessageFns<AsteroidObject> = {
 };
 
 function createBaseGetAsteroidRequest(): GetAsteroidRequest {
-  return { asteroidId: "" };
+  return { id: "" };
 }
 
 export const GetAsteroidRequest: MessageFns<GetAsteroidRequest> = {
   encode(message: GetAsteroidRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.asteroidId !== "") {
-      writer.uint32(10).string(message.asteroidId);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     return writer;
   },
@@ -391,7 +387,7 @@ export const GetAsteroidRequest: MessageFns<GetAsteroidRequest> = {
             break;
           }
 
-          message.asteroidId = reader.string();
+          message.id = reader.string();
           continue;
         }
       }
@@ -404,13 +400,13 @@ export const GetAsteroidRequest: MessageFns<GetAsteroidRequest> = {
   },
 
   fromJSON(object: any): GetAsteroidRequest {
-    return { asteroidId: isSet(object.asteroidId) ? globalThis.String(object.asteroidId) : "" };
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
   },
 
   toJSON(message: GetAsteroidRequest): unknown {
     const obj: any = {};
-    if (message.asteroidId !== "") {
-      obj.asteroidId = message.asteroidId;
+    if (message.id !== "") {
+      obj.id = message.id;
     }
     return obj;
   },
@@ -420,67 +416,7 @@ export const GetAsteroidRequest: MessageFns<GetAsteroidRequest> = {
   },
   fromPartial(object: DeepPartial<GetAsteroidRequest>): GetAsteroidRequest {
     const message = createBaseGetAsteroidRequest();
-    message.asteroidId = object.asteroidId ?? "";
-    return message;
-  },
-};
-
-function createBaseGetAsteroidResponse(): GetAsteroidResponse {
-  return { asteroid: undefined };
-}
-
-export const GetAsteroidResponse: MessageFns<GetAsteroidResponse> = {
-  encode(message: GetAsteroidResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.asteroid !== undefined) {
-      AsteroidObject.encode(message.asteroid, writer.uint32(10).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetAsteroidResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetAsteroidResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.asteroid = AsteroidObject.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GetAsteroidResponse {
-    return { asteroid: isSet(object.asteroid) ? AsteroidObject.fromJSON(object.asteroid) : undefined };
-  },
-
-  toJSON(message: GetAsteroidResponse): unknown {
-    const obj: any = {};
-    if (message.asteroid !== undefined) {
-      obj.asteroid = AsteroidObject.toJSON(message.asteroid);
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<GetAsteroidResponse>): GetAsteroidResponse {
-    return GetAsteroidResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<GetAsteroidResponse>): GetAsteroidResponse {
-    const message = createBaseGetAsteroidResponse();
-    message.asteroid = (object.asteroid !== undefined && object.asteroid !== null)
-      ? AsteroidObject.fromPartial(object.asteroid)
-      : undefined;
+    message.id = object.id ?? "";
     return message;
   },
 };
@@ -715,8 +651,8 @@ export const AsteroidService = {
     responseStream: false,
     requestSerialize: (value: GetAsteroidRequest): Buffer => Buffer.from(GetAsteroidRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): GetAsteroidRequest => GetAsteroidRequest.decode(value),
-    responseSerialize: (value: GetAsteroidResponse): Buffer => Buffer.from(GetAsteroidResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetAsteroidResponse => GetAsteroidResponse.decode(value),
+    responseSerialize: (value: AsteroidObject): Buffer => Buffer.from(AsteroidObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AsteroidObject => AsteroidObject.decode(value),
   },
   listGalaxies: {
     path: "/asteroid.Asteroid/ListGalaxies",
@@ -736,7 +672,7 @@ export interface AsteroidServer extends UntypedServiceImplementation {
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
   listAsteroids: handleUnaryCall<ListAsteroidsRequest, ListAsteroidsResponse>;
-  getAsteroid: handleUnaryCall<GetAsteroidRequest, GetAsteroidResponse>;
+  getAsteroid: handleUnaryCall<GetAsteroidRequest, AsteroidObject>;
   listGalaxies: handleUnaryCall<ListGalaxiesRequest, ListGalaxiesResponse>;
 }
 
@@ -806,18 +742,18 @@ export interface AsteroidClient extends Client {
   ): ClientUnaryCall;
   getAsteroid(
     request: GetAsteroidRequest,
-    callback: (error: ServiceError | null, response: GetAsteroidResponse) => void,
+    callback: (error: ServiceError | null, response: AsteroidObject) => void,
   ): ClientUnaryCall;
   getAsteroid(
     request: GetAsteroidRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetAsteroidResponse) => void,
+    callback: (error: ServiceError | null, response: AsteroidObject) => void,
   ): ClientUnaryCall;
   getAsteroid(
     request: GetAsteroidRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetAsteroidResponse) => void,
+    callback: (error: ServiceError | null, response: AsteroidObject) => void,
   ): ClientUnaryCall;
   listGalaxies(
     request: ListGalaxiesRequest,

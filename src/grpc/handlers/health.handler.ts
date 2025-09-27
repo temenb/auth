@@ -1,12 +1,8 @@
 import * as grpc from '@grpc/grpc-js';
-import * as HealthGrpc from '../../generated/common/health';
-import * as EmptyGrpc from '../../generated/common/empty';
+import * as HealthGrpc from '../generated/common/health';
+import * as EmptyGrpc from '../generated/common/empty';
 import * as heathService from '../../services/health.service';
-
-export const callbackError = (callback: grpc.sendUnaryData<any>, err: unknown) => {
-  const message = err instanceof Error ? err.message : 'Unknown error';
-  callback({code: grpc.status.INTERNAL, message}, null);
-};
+import {callbackError} from './callback.error';
 
 export const health = async (
   call: grpc.ServerUnaryCall<EmptyGrpc.Empty, HealthGrpc.HealthReport>,

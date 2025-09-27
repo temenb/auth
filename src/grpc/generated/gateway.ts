@@ -17,10 +17,10 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
-import { AnonymousSignInRequest, AuthResponse } from "./auth";
+import { AnonymousSignInRequest, AuthObject } from "./auth";
 import { Empty } from "./common/empty";
 import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
-import { ProfileResponse, ViewRequest } from "./profile";
+import { ProfileObject, ViewRequest } from "./profile";
 
 export const protobufPackage = "gateway";
 
@@ -69,8 +69,8 @@ export const GatewayService = {
     requestSerialize: (value: AnonymousSignInRequest): Buffer =>
       Buffer.from(AnonymousSignInRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): AnonymousSignInRequest => AnonymousSignInRequest.decode(value),
-    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+    responseSerialize: (value: AuthObject): Buffer => Buffer.from(AuthObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthObject => AuthObject.decode(value),
   },
   viewProfile: {
     path: "/gateway.Gateway/ViewProfile",
@@ -78,8 +78,8 @@ export const GatewayService = {
     responseStream: false,
     requestSerialize: (value: ViewRequest): Buffer => Buffer.from(ViewRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): ViewRequest => ViewRequest.decode(value),
-    responseSerialize: (value: ProfileResponse): Buffer => Buffer.from(ProfileResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProfileResponse => ProfileResponse.decode(value),
+    responseSerialize: (value: ProfileObject): Buffer => Buffer.from(ProfileObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ProfileObject => ProfileObject.decode(value),
   },
 } as const;
 
@@ -88,8 +88,8 @@ export interface GatewayServer extends UntypedServiceImplementation {
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
-  anonymousSignIn: handleUnaryCall<AnonymousSignInRequest, AuthResponse>;
-  viewProfile: handleUnaryCall<ViewRequest, ProfileResponse>;
+  anonymousSignIn: handleUnaryCall<AnonymousSignInRequest, AuthObject>;
+  viewProfile: handleUnaryCall<ViewRequest, ProfileObject>;
 }
 
 export interface GatewayClient extends Client {
@@ -143,33 +143,33 @@ export interface GatewayClient extends Client {
   ): ClientUnaryCall;
   anonymousSignIn(
     request: AnonymousSignInRequest,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   anonymousSignIn(
     request: AnonymousSignInRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   anonymousSignIn(
     request: AnonymousSignInRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   viewProfile(
     request: ViewRequest,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
   viewProfile(
     request: ViewRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
   viewProfile(
     request: ViewRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
 }
 

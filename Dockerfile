@@ -6,11 +6,9 @@ WORKDIR /usr/src/app/
 COPY shared/ ./shared/
 COPY turbo.json  ./
 COPY package.json ./
-COPY package.lock ./
 COPY pnpm-workspace.yaml ./
 COPY tsconfig.json ./
 COPY services/auth/package*.json ./services/auth/
-COPY services/auth/package*.lock ./services/auth/
 COPY services/auth/jest.config.js ./services/auth/
 COPY services/auth/tsconfig.json ./services/auth/
 COPY services/auth/src ./services/auth/src/

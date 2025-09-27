@@ -1,15 +1,11 @@
 import * as grpc from '@grpc/grpc-js';
-import * as AuthGrpc from '../../generated/auth';
+import * as AuthGrpc from '../generated/auth';
 import * as authService from '../../services/auth.service';
-
-export const callbackError = (callback: grpc.sendUnaryData<any>, err: unknown) => {
-  const message = err instanceof Error ? err.message : 'Unknown error';
-  callback({code: grpc.status.INTERNAL, message}, null);
-};
+import {callbackError} from './callback.error';
 
 export const register = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.RegisterRequest, AuthGrpc.AuthResponse>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
+  call: grpc.ServerUnaryCall<AuthGrpc.RegisterRequest, AuthGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
 ) => {
   throw new Error('Registration is disabled');
   const {email, password} = call.request;
@@ -27,8 +23,8 @@ export const register = async (
 };
 
 export const anonymousSignIn = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.AnonymousSignInRequest, AuthGrpc.AuthResponse>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
+  call: grpc.ServerUnaryCall<AuthGrpc.AnonymousSignInRequest, AuthGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
 ) => {
   try {
     const {deviceId} = call.request;
@@ -42,8 +38,8 @@ export const anonymousSignIn = async (
 };
 
 export const login = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.LoginRequest, AuthGrpc.AuthResponse>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
+  call: grpc.ServerUnaryCall<AuthGrpc.LoginRequest, AuthGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
 ) => {
   throw new Error('Login is disabled');
   const {email, password} = call.request;
@@ -59,8 +55,8 @@ export const login = async (
 };
 
 export const refreshTokens = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.RefreshTokensRequest, AuthGrpc.AuthResponse>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
+  call: grpc.ServerUnaryCall<AuthGrpc.RefreshTokensRequest, AuthGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
 ) => {
   const {token} = call.request;
 

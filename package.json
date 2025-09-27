@@ -8,7 +8,6 @@
     "stage": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "postinstall": "prisma generate",
     "migrate": "npx prisma migrate dev --name init",
     "test": "jest"
   },

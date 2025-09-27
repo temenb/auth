@@ -28,7 +28,7 @@ export interface RegisterRequest {
   password: string;
 }
 
-export interface AuthResponse {
+export interface AuthObject {
   accessToken: string;
   refreshToken: string;
   userId: string;
@@ -141,12 +141,12 @@ export const RegisterRequest: MessageFns<RegisterRequest> = {
   },
 };
 
-function createBaseAuthResponse(): AuthResponse {
+function createBaseAuthObject(): AuthObject {
   return { accessToken: "", refreshToken: "", userId: "" };
 }
 
-export const AuthResponse: MessageFns<AuthResponse> = {
-  encode(message: AuthResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AuthObject: MessageFns<AuthObject> = {
+  encode(message: AuthObject, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.accessToken !== "") {
       writer.uint32(10).string(message.accessToken);
     }
@@ -159,10 +159,10 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): AuthResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthObject {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAuthResponse();
+    const message = createBaseAuthObject();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -199,7 +199,7 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     return message;
   },
 
-  fromJSON(object: any): AuthResponse {
+  fromJSON(object: any): AuthObject {
     return {
       accessToken: isSet(object.accessToken) ? globalThis.String(object.accessToken) : "",
       refreshToken: isSet(object.refreshToken) ? globalThis.String(object.refreshToken) : "",
@@ -207,7 +207,7 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     };
   },
 
-  toJSON(message: AuthResponse): unknown {
+  toJSON(message: AuthObject): unknown {
     const obj: any = {};
     if (message.accessToken !== "") {
       obj.accessToken = message.accessToken;
@@ -221,11 +221,11 @@ export const AuthResponse: MessageFns<AuthResponse> = {
     return obj;
   },
 
-  create(base?: DeepPartial<AuthResponse>): AuthResponse {
-    return AuthResponse.fromPartial(base ?? {});
+  create(base?: DeepPartial<AuthObject>): AuthObject {
+    return AuthObject.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<AuthResponse>): AuthResponse {
-    const message = createBaseAuthResponse();
+  fromPartial(object: DeepPartial<AuthObject>): AuthObject {
+    const message = createBaseAuthObject();
     message.accessToken = object.accessToken ?? "";
     message.refreshToken = object.refreshToken ?? "";
     message.userId = object.userId ?? "";
@@ -737,8 +737,8 @@ export const AuthService = {
     responseStream: false,
     requestSerialize: (value: RegisterRequest): Buffer => Buffer.from(RegisterRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): RegisterRequest => RegisterRequest.decode(value),
-    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+    responseSerialize: (value: AuthObject): Buffer => Buffer.from(AuthObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthObject => AuthObject.decode(value),
   },
   login: {
     path: "/auth.Auth/Login",
@@ -746,8 +746,8 @@ export const AuthService = {
     responseStream: false,
     requestSerialize: (value: LoginRequest): Buffer => Buffer.from(LoginRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): LoginRequest => LoginRequest.decode(value),
-    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+    responseSerialize: (value: AuthObject): Buffer => Buffer.from(AuthObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthObject => AuthObject.decode(value),
   },
   logout: {
     path: "/auth.Auth/Logout",
@@ -764,8 +764,8 @@ export const AuthService = {
     responseStream: false,
     requestSerialize: (value: RefreshTokensRequest): Buffer => Buffer.from(RefreshTokensRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): RefreshTokensRequest => RefreshTokensRequest.decode(value),
-    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+    responseSerialize: (value: AuthObject): Buffer => Buffer.from(AuthObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthObject => AuthObject.decode(value),
   },
   forgotPassword: {
     path: "/auth.Auth/ForgotPassword",
@@ -783,8 +783,8 @@ export const AuthService = {
     responseStream: false,
     requestSerialize: (value: ResetPasswordRequest): Buffer => Buffer.from(ResetPasswordRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): ResetPasswordRequest => ResetPasswordRequest.decode(value),
-    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+    responseSerialize: (value: AuthObject): Buffer => Buffer.from(AuthObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthObject => AuthObject.decode(value),
   },
   anonymousSignIn: {
     path: "/auth.Auth/AnonymousSignIn",
@@ -793,8 +793,8 @@ export const AuthService = {
     requestSerialize: (value: AnonymousSignInRequest): Buffer =>
       Buffer.from(AnonymousSignInRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): AnonymousSignInRequest => AnonymousSignInRequest.decode(value),
-    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
+    responseSerialize: (value: AuthObject): Buffer => Buffer.from(AuthObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthObject => AuthObject.decode(value),
   },
 } as const;
 
@@ -803,13 +803,13 @@ export interface AuthServer extends UntypedServiceImplementation {
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
-  register: handleUnaryCall<RegisterRequest, AuthResponse>;
-  login: handleUnaryCall<LoginRequest, AuthResponse>;
+  register: handleUnaryCall<RegisterRequest, AuthObject>;
+  login: handleUnaryCall<LoginRequest, AuthObject>;
   logout: handleUnaryCall<LogoutRequest, LogoutResponse>;
-  refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthResponse>;
+  refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthObject>;
   forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty>;
-  resetPassword: handleUnaryCall<ResetPasswordRequest, AuthResponse>;
-  anonymousSignIn: handleUnaryCall<AnonymousSignInRequest, AuthResponse>;
+  resetPassword: handleUnaryCall<ResetPasswordRequest, AuthObject>;
+  anonymousSignIn: handleUnaryCall<AnonymousSignInRequest, AuthObject>;
 }
 
 export interface AuthClient extends Client {
@@ -863,30 +863,30 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   register(
     request: RegisterRequest,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   register(
     request: RegisterRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   register(
     request: RegisterRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
-  login(request: LoginRequest, callback: (error: ServiceError | null, response: AuthResponse) => void): ClientUnaryCall;
+  login(request: LoginRequest, callback: (error: ServiceError | null, response: AuthObject) => void): ClientUnaryCall;
   login(
     request: LoginRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   login(
     request: LoginRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   logout(
     request: LogoutRequest,
@@ -905,18 +905,18 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   refreshTokens(
     request: RefreshTokensRequest,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   refreshTokens(
     request: RefreshTokensRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   refreshTokens(
     request: RefreshTokensRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   forgotPassword(
     request: ForgotPasswordRequest,
@@ -935,33 +935,33 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   resetPassword(
     request: ResetPasswordRequest,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   resetPassword(
     request: ResetPasswordRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   resetPassword(
     request: ResetPasswordRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   anonymousSignIn(
     request: AnonymousSignInRequest,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   anonymousSignIn(
     request: AnonymousSignInRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
   anonymousSignIn(
     request: AnonymousSignInRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponse) => void,
+    callback: (error: ServiceError | null, response: AuthObject) => void,
   ): ClientUnaryCall;
 }
 

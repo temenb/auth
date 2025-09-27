@@ -1,11 +1,9 @@
-import {PrismaClient} from '@prisma/client';
+import {prisma} from '../utils/prisma';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../utils/token';
 import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
 import {createProducer} from '@shared/kafka';
 import {randomUUID} from 'crypto';
-
-const prisma = new PrismaClient();
 
 export const createUser = async (email: string, password: string) => {
   const existingUser = await prisma.user.findUnique({where: {email}});

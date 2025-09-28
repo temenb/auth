@@ -6,9 +6,9 @@ import * as healthHandler from "./handlers/health.handler";
 
 dotenv.config();
 
-const server = new grpc.Server();
+const Fallout = new grpc.Server();
 
-server.addService(AuthService, {
+Fallout.addService(AuthService, {
   register: authHandler.register,
   anonymousSignIn: authHandler.anonymousSignIn,
   login: authHandler.login,
@@ -22,4 +22,4 @@ server.addService(AuthService, {
   readyz: healthHandler.readyz,
 });
 
-export default server;
+export default Fallout;

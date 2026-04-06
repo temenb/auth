@@ -21,66 +21,110 @@ export const createUser = async (email: string, password: string) => {
 };
 
 export const anonymousSignIn = async (deviceId: string) => {
-  const user = await prisma.user.upsert({
-    where: {deviceId},
-    create: {deviceId, email: randomUUID()},
-    update: {},
+  // ищем устройство по deviceId
+  let device = await prisma.device.findUnique({
+    where: { deviceId },
+    include: { user: true },
   });
 
+  let user;
+  if (!device) {
+    user = await prisma.user.create({
+      data: {
+        email: randomUUID(),
+        devices: {
+          create: { deviceId },
+        },
+      },
+    });
+  } else {
+    user = device.user;
+  }
+
   const producer = await createProducer(kafkaConfig);
-  producer.send(createUserProducerConfig, [{value: JSON.stringify({ownerId: user.id})}]);
+  await producer.send(createUserProducerConfig, [
+    { value: JSON.stringify({ ownerId: user.id }) },
+  ]);
 
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
-  const userId = user.id;
 
-  await prisma.user.update({
-    where: {id: user.id},
-    data: {refreshToken},
+  await prisma.session.create({
+    data: {
+      userId: user.id,
+      accessToken,
+      refreshToken,
+    },
   });
 
-  return {accessToken, refreshToken, userId};
+  return { accessToken, refreshToken, userId: user.id };
 };
 
 export const login = async (email: string, password: string) => {
-  const user = await prisma.user.findUnique({where: {email}});
-  if (!user || !user.password) throw new Error('Invalid credentials');
+  // ищем пользователя по email
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || !user.passwordHash) {
+    throw new Error('Invalid credentials');
+  }
 
-  const isValid = await bcrypt.compare(password, user.password);
-  if (!isValid) throw new Error('Invalid credentials');
+  // проверяем пароль
+  const isValid = await bcrypt.compare(password, user.passwordHash);
+  if (!isValid) {
+    throw new Error('Invalid credentials');
+  }
 
+  // генерируем токены
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
-  const userId = user.id;
 
-  await prisma.user.update({
-    where: {id: user.id},
-    data: {refreshToken},
+  // создаём новую сессию
+  await prisma.session.create({
+    data: {
+      userId: user.id,
+      accessToken,
+      refreshToken,
+    },
   });
 
-  return {accessToken, refreshToken, userId};
+  return { accessToken, refreshToken, userId: user.id };
 };
 
 export const refreshTokens = async (token: string) => {
   const decoded = verifyRefreshToken(token) as any;
-  const user = await prisma.user.findUnique({where: {id: decoded.userId}});
-  if (!user || user.refreshToken !== token) throw new Error('Invalid refresh token');
 
-  const newAccessToken = generateAccessToken(user.id);
-  const newRefreshToken = generateRefreshToken(user.id);
-
-  await prisma.user.update({
-    where: {id: user.id},
-    data: {refreshToken: newRefreshToken},
+  // ищем сессию по refreshToken
+  const session = await prisma.session.findUnique({
+    where: { refreshToken: token },
+    include: { user: true },
   });
 
-  return {accessToken: newAccessToken, refreshToken: newRefreshToken, userId: user.id};
+  if (!session || !session.user || session.user.id !== decoded.userId) {
+    throw new Error('Invalid refresh token');
+  }
+
+  const newAccessToken = generateAccessToken(session.user.id);
+  const newRefreshToken = generateRefreshToken(session.user.id);
+
+  // обновляем сессию
+  await prisma.session.update({
+    where: { id: session.id },
+    data: {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    },
+  });
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+    userId: session.user.id,
+  };
 };
 
 export const logout = async (userId: string) => {
-  await prisma.user.update({
-    where: {id: userId},
-    data: {refreshToken: null},
+  // удаляем все сессии пользователя
+  await prisma.session.deleteMany({
+    where: { userId },
   });
 
   return {
@@ -88,6 +132,7 @@ export const logout = async (userId: string) => {
     message: 'Logged out successfully',
   };
 };
+
 
 export const forgotPassword = async (userId: string) => {
   // await prisma.user.update({
@@ -102,3 +147,4 @@ export const resetPassword = async (userId: string) => {
   //     data: { refreshToken: null },
   // });
 };
+

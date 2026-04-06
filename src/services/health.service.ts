@@ -2,6 +2,7 @@ import logger from "@shared/logger";
 import prisma from '../utils/prisma';
 import kafkaConfig from "../config/kafka.config";
 import {createProducer} from '@shared/kafka';
+import { HealthCheckResponse } from '../grpc/generated/common/grpc.health';
 
 const startedAt = Date.now();
 
@@ -10,6 +11,9 @@ export const health = async () => {
     checkPostgres(),
     checkKafka(),
   ]);
+
+  // console.log(HealthCheckResponse.ServingStatus.SERVING); //TODO!!!
+
 
   return {
     healthy: pgOk && kafkaOk,

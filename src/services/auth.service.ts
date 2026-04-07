@@ -1,6 +1,6 @@
-import {prisma} from '../utils/prisma';
+import {prisma} from '../lib/prisma';
 import bcrypt from 'bcrypt';
-import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../utils/token';
+import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
 import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
 import {createProducer} from '@shared/kafka';
 import {randomUUID} from 'crypto';

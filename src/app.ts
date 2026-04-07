@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
 import grpcServer from './grpc/server';
 import * as grpc from '@grpc/grpc-js';
 import logger from '@shared/logger';
+import { startBoss } from './lib/pgBoss';
 
-dotenv.config();
+await startBoss();
 
 const GRPC_PORT = process.env.GRPC_PORT ?? '50051';
 

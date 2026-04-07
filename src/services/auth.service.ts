@@ -2,27 +2,7 @@ import {prisma} from '../lib/prisma';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
 import {randomUUID} from 'crypto';
-import {enqueueEvent} from '../kafka/eventQueue';
-
-
-// import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
-// import {createProducer} from '@shared/kafka';
-
-
-// import {startBoss} from './lib/pgBoss';
-// import { startUserCreatedWorker } from './workers/userCreated.worker';
-
-
-
-// async function startPgBoss() {
-//   await startBoss();
-//   await startUserCreatedWorker();
-//   console.log('PgBoss started');
-// }
-
-// startPgBoss().catch(err => {
-//   logger.error('Failed to start PgBoss', err);
-// });
+import {enqueueEventTx} from '../lib/pgBoss';
 
 
 export const createUser = async (email: string, password: string) => {
@@ -37,14 +17,7 @@ export const createUser = async (email: string, password: string) => {
       data: {email, password: hashedPassword},
     });
 
-
-    enqueueEvent(tx, 'user.created', { userId: user.id });
-
-    // await tx.$executeRawUnsafe(
-    //   `select pgboss.send($1, $2)`,
-    //   'user.created',
-    //   JSON.stringify({ userId: user.id })
-    // );
+    enqueueEventTx(tx, 'user.created', { userId: user.id });
 
     return user;
 
@@ -53,23 +26,28 @@ export const createUser = async (email: string, password: string) => {
 };
 
 export const anonymousSignIn = async (deviceId: string) => {
-  // ищем устройство по deviceId
   let device = await prisma.device.findUnique({
     where: { deviceId },
     include: { user: true },
   });
 
   let user;
-  if (!device) {
-    user = await prisma.user.create({
-      data: {
-        email: randomUUID(),
-        devices: {
-          create: { deviceId },
-        },
-      },
-    });
 
+  if (!device) {
+    user = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          email: randomUUID(),
+          devices: {
+            create: { deviceId },
+          },
+        },
+      });
+
+      await enqueueEventTx(tx, 'user.created', { userId: newUser.id });
+
+      return newUser;
+    });
   } else {
     user = device.user;
   }
@@ -84,6 +62,7 @@ export const anonymousSignIn = async (deviceId: string) => {
       refreshToken,
     },
   });
+
 
   return { accessToken, refreshToken, userId: user.id };
 };
@@ -175,4 +154,5 @@ export const resetPassword = async (userId: string) => {
   //     data: { refreshToken: null },
   // });
 };
+
 

@@ -4,15 +4,30 @@ import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../
 import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
 import {createProducer} from '@shared/kafka';
 import {randomUUID} from 'crypto';
+import { boss } from '../lib/pgBoss';
 
 export const createUser = async (email: string, password: string) => {
   const existingUser = await prisma.user.findUnique({where: {email}});
   if (existingUser) throw new Error('User already exists');
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  return await prisma.user.create({
-    data: {email, password: hashedPassword},
+
+
+  return prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {email, password: hashedPassword},
+    });
+
+    await tx.$executeRawUnsafe(
+      `select pgboss.send($1, $2)`,
+      'user.created',
+      JSON.stringify({ userId: user.id })
+    );
+
+    return user;
+
   });
+
 };
 
 export const anonymousSignIn = async (deviceId: string) => {

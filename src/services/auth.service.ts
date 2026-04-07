@@ -32,6 +32,7 @@ export const anonymousSignIn = async (deviceId: string) => {
         },
       },
     });
+
   } else {
     user = device.user;
   }

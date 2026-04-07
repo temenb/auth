@@ -1,10 +1,29 @@
 import {prisma} from '../lib/prisma';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
-import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
-import {createProducer} from '@shared/kafka';
 import {randomUUID} from 'crypto';
-import { boss } from '../lib/pgBoss';
+import {enqueueEvent} from '../kafka/eventQueue';
+
+
+// import kafkaConfig, {createUserProducerConfig} from "../config/kafka.config";
+// import {createProducer} from '@shared/kafka';
+
+
+// import {startBoss} from './lib/pgBoss';
+// import { startUserCreatedWorker } from './workers/userCreated.worker';
+
+
+
+// async function startPgBoss() {
+//   await startBoss();
+//   await startUserCreatedWorker();
+//   console.log('PgBoss started');
+// }
+
+// startPgBoss().catch(err => {
+//   logger.error('Failed to start PgBoss', err);
+// });
+
 
 export const createUser = async (email: string, password: string) => {
   const existingUser = await prisma.user.findUnique({where: {email}});
@@ -18,11 +37,14 @@ export const createUser = async (email: string, password: string) => {
       data: {email, password: hashedPassword},
     });
 
-    await tx.$executeRawUnsafe(
-      `select pgboss.send($1, $2)`,
-      'user.created',
-      JSON.stringify({ userId: user.id })
-    );
+
+    enqueueEvent(tx, 'user.created', { userId: user.id });
+
+    // await tx.$executeRawUnsafe(
+    //   `select pgboss.send($1, $2)`,
+    //   'user.created',
+    //   JSON.stringify({ userId: user.id })
+    // );
 
     return user;
 
@@ -51,11 +73,6 @@ export const anonymousSignIn = async (deviceId: string) => {
   } else {
     user = device.user;
   }
-
-  const producer = await createProducer(kafkaConfig);
-  await producer.send(createUserProducerConfig, [
-    { value: JSON.stringify({ ownerId: user.id }) },
-  ]);
 
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);

@@ -2,6 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as AuthGrpc from '../generated/auth';
 import * as authService from '../../services/auth.service';
 import {callbackError} from './callback.error';
+import logger from "@shared/logger";
 
 export const register = async (
   call: grpc.ServerUnaryCall<AuthGrpc.RegisterRequest, AuthGrpc.AuthObject>,
@@ -18,6 +19,7 @@ export const register = async (
     callback(null, result);
 
   } catch (err: any) {
+    logger.log(err);
     callbackError(callback, err);
   }
 };
@@ -33,6 +35,7 @@ export const anonymousSignIn = async (
     callback(null, result);
 
   } catch (err: any) {
+    logger.log(err);
     callbackError(callback, err);
   }
 };
@@ -50,6 +53,7 @@ export const login = async (
     callback(null, result);
 
   } catch (err: any) {
+    logger.log(err);
     callbackError(callback, err);
   }
 };
@@ -66,6 +70,7 @@ export const refreshTokens = async (
     callback(null, response);
 
   } catch (err: any) {
+    logger.log(err);
     callbackError(callback, err);
   }
 };
@@ -82,6 +87,7 @@ export const logout = async (
     callback(null, response);
 
   } catch (err: any) {
+    logger.log(err);
     callbackError(callback, err);
   }
 };

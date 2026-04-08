@@ -1,7 +1,7 @@
 import grpcServer from './grpc/server';
 import * as grpc from '@grpc/grpc-js';
 import logger from '@shared/logger';
-
+import {createBoss} from '@shared/pg-boss';
 
 const GRPC_PORT = process.env.GRPC_PORT ?? '50051';
 
@@ -29,9 +29,15 @@ async function startGrpc() {
   });
 }
 
+async function startPgBoss() {
+  return new Promise<void>(() => {
+    createBoss();
+  });
+}
+
 async function bootstrap() {
   try {
-    await Promise.all([startGrpc()]);
+    await Promise.all([startGrpc(), startPgBoss()]);
   } catch (err) {
     process.exit(1);
   }

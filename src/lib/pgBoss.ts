@@ -1,8 +1,5 @@
 import { Prisma } from '@prisma/client';
 
-
-
-
 export async function enqueueEventTx(
   tx: Prisma.TransactionClient,
   topic: string,

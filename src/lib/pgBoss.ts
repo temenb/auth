@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import logger from "@shared/logger";
 
 export async function enqueueEventTx(
   tx: Prisma.TransactionClient,
@@ -10,8 +11,10 @@ export async function enqueueEventTx(
 
 
 
+  // logger.log(jobName);
   const result = await tx.$queryRaw<{ send: string }[]>`
-    select pgboss.send(${jobName}, ${JSON.stringify(data)})
+      insert into pgboss.job (name, data)
+      values (${jobName}, ${JSON.stringify(data)}::jsonb)
   `;
 
   return result[0]?.send;

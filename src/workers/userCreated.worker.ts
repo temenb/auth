@@ -13,7 +13,13 @@ export async function startUserCreatedWorker(kafkaConfig: KafkaConfig) {
 
   await boss().work(pgBossKafkaEventPrefix + pgBossKafkaEventName, async (job: Job) => {
     try {
-      const { name, data } = job;
+
+      const j = Array.isArray(job) ? job[0] : job;
+      const { name, data } = j;
+
+      // logger.log(job);
+      // logger.log(name);
+      // logger.log(data);
       const topic = name.replace('event.', '');
 
       await producer.send({topic}, data);

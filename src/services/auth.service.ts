@@ -64,7 +64,7 @@ export const anonymousSignIn = async (deviceId: string) => {
   });
 
 
-  return {accessToken, refreshToken, userId: user.id};
+  return {accessToken, refreshToken};
 };
 
 export const login = async (email: string, password: string) => {
@@ -93,7 +93,7 @@ export const login = async (email: string, password: string) => {
     },
   });
 
-  return {accessToken, refreshToken, userId: user.id};
+  return {accessToken, refreshToken};
 };
 
 export const refreshTokens = async (token: string) => {
@@ -124,7 +124,6 @@ export const refreshTokens = async (token: string) => {
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
-    userId: session.user.id,
   };
 };
 

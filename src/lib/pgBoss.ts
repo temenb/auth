@@ -1,5 +1,4 @@
-import { Prisma } from '@prisma/client';
-import logger from "@shared/logger";
+import {Prisma} from '@prisma/client';
 
 export async function enqueueEventTx(
   tx: Prisma.TransactionClient,
@@ -7,8 +6,6 @@ export async function enqueueEventTx(
   data: object
 ): Promise<string | undefined> {
   const jobName = `event.${topic}`;
-
-
 
 
   // logger.log(jobName);

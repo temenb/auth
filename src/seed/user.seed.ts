@@ -15,9 +15,9 @@ export async function seedUsers() {
 
   // Создаём пользователей только если их ещё нет
   for (const user of users) {
-    const exists = await prisma.user.findUnique({ where: { id: user.id } });
+    const exists = await prisma.user.findUnique({where: {id: user.id}});
     if (!exists) {
-      await prisma.user.create({ data: user });
+      await prisma.user.create({data: user});
     }
   }
 

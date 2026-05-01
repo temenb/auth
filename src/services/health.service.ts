@@ -2,7 +2,6 @@ import logger from "@shared/logger";
 import prisma from '../lib/prisma';
 import kafkaConfig from "../config/kafka.config";
 import {createProducer} from '@shared/kafka';
-import { HealthCheckResponse } from '../grpc/generated/common/grpc.health';
 
 const startedAt = Date.now();
 

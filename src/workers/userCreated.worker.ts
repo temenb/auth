@@ -1,5 +1,5 @@
-import { boss } from '@shared/pg-boss';
-import { Job } from 'pg-boss';
+import {boss} from '@shared/pg-boss';
+import {Job} from 'pg-boss';
 import {createProducer, KafkaConfig} from '@shared/kafka';
 import logger from "@shared/logger";
 
@@ -15,7 +15,7 @@ export async function startUserCreatedWorker(kafkaConfig: KafkaConfig) {
     try {
 
       const j = Array.isArray(job) ? job[0] : job;
-      const { name, data } = j;
+      const {name, data} = j;
 
       // logger.log(job);
       // logger.log(name);

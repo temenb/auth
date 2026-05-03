@@ -4,13 +4,14 @@ import logger from '@shared/logger';
 import {initBoss} from '@shared/pg-boss';
 import {startUserCreatedWorker} from './workers/userCreated.worker';
 import kafkaConfig from "./config/kafka.config";
+import config from "./config/config";
 
 const GRPC_PORT = process.env.GRPC_PORT ?? '50051';
 
 async function startGrpc() {
   return new Promise<void>((resolve, reject) => {
     grpcServer.bindAsync(
-      `0.0.0.0:${GRPC_PORT}`,
+      `0.0.0.0:${config.grpcPort}`,
       grpc.ServerCredentials.createInsecure(),
       (err, port) => {
         if (err) {

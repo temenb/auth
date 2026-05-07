@@ -1,9 +1,9 @@
 import grpcServer from './grpc/server';
 import * as grpc from '@grpc/grpc-js';
 import logger from '@shared/logger';
-import {initBoss} from '@shared/pg-boss';
+import {initBoss, startWorker} from '@shared/pg-boss';
 import {startUserCreatedWorker} from './workers/userCreated.worker';
-import kafkaConfig from "./config/kafka.config";
+import kafkaConfig, {kafkaProducersConfig} from "./config/kafka.config";
 import config from "./config/config";
 
 const GRPC_PORT = process.env.GRPC_PORT ?? '50051';
@@ -33,11 +33,15 @@ async function startGrpc() {
 }
 
 async function startPgBoss() {
-  return new Promise<void>(() => {
-    initBoss(() => new Promise<void>(() => {
-      startUserCreatedWorker(kafkaConfig);
-    }));
-  });
+  const configs = Object.values(kafkaProducersConfig);
+
+  return Promise.all(
+    configs.map(async (topicConfig) => {
+      await initBoss(async () => {
+        await startWorker(kafkaConfig, topicConfig);
+      });
+    })
+  );
 }
 
 async function bootstrap() {

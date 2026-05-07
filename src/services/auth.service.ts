@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
 import {randomUUID} from 'crypto';
 import {enqueueEventTx} from '../lib/pgBoss';
+import {kafkaProducersConfig} from "../config/kafka.config";
 
 
 export const createUser = async (email: string, password: string) => {
@@ -17,7 +18,7 @@ export const createUser = async (email: string, password: string) => {
       data: {email, password: hashedPassword},
     });
 
-    enqueueEventTx(tx, 'user.created', {userId: user.id});
+    enqueueEventTx(kafkaProducersConfig.topicUserCreated, {userId: user.id}, tx);
 
     return user;
 
@@ -44,7 +45,7 @@ export const anonymousSignIn = async (deviceId: string) => {
         },
       });
 
-      await enqueueEventTx(tx, 'user.created', {userId: newUser.id});
+      await enqueueEventTx(kafkaProducersConfig.topicUserCreated, {userId: newUser.id}, tx);
 
       return newUser;
     });

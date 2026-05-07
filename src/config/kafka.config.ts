@@ -4,8 +4,8 @@ const kafkaConfig = {
 };
 
 
-export const createUserProducerConfig = {
-  topic: process.env.KAFKA_TOPIC_USER_CREATED || 'user.created',
+export const kafkaProducersConfig = {
+  topicUserCreated: process.env.KAFKA_TOPIC_USER_CREATED || 'user.created',
 }
 
 export default kafkaConfig;

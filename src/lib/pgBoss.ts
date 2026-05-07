@@ -12,6 +12,7 @@ export async function enqueueEventTx(
   const result = await tx.$queryRaw<{ send: string }[]>`
       insert into pgboss.job (name, data)
       values (${jobName}, ${JSON.stringify(data)}::jsonb)
+      returning id
   `;
 
   return result[0]?.send;

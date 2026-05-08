@@ -2,8 +2,8 @@ import {prisma} from '../lib/prisma';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
 import {randomUUID} from 'crypto';
-import {enqueueEventTx} from '../lib/pgBoss';
 import {kafkaProducersConfig} from "../config/kafka.config";
+import {enqueueEventTx} from "@shared/pg-boss/src/enqueueEvent";
 
 
 export const createUser = async (email: string, password: string) => {
@@ -49,6 +49,18 @@ export const anonymousSignIn = async (deviceId: string) => {
 
       return newUser;
     });
+
+    // const newUser = user = await prisma.user.create({
+    //   data: {
+    //     email: randomUUID(),
+    //     devices: {
+    //       create: {deviceId},
+    //     },
+    //   },
+    // });
+    //
+    // await enqueueEventTx(kafkaProducersConfig.topicUserCreated, {userId: newUser.id});
+    // user = newUser;
   } else {
     user = device.user;
   }

@@ -18,7 +18,7 @@ export const createUser = async (email: string, password: string) => {
       data: {email, password: hashedPassword},
     });
 
-    enqueueEventTx(kafkaProducersConfig.topicUserCreated, {userId: user.id}, tx);
+    enqueueEventTx(kafkaProducersConfig.topicUserCreated, user, tx);
 
     return user;
 
@@ -45,7 +45,7 @@ export const anonymousSignIn = async (deviceId: string) => {
         },
       });
 
-      await enqueueEventTx(kafkaProducersConfig.topicUserCreated, {userId: newUser.id}, tx);
+      await enqueueEventTx(kafkaProducersConfig.topicUserCreated, newUser, tx);
 
       return newUser;
     });

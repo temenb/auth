@@ -5,8 +5,6 @@ import {initBoss, startWorker} from '@shared/pg-boss';
 import kafkaConfig, {kafkaProducersConfig} from "./config/kafka.config";
 import config from "./config/config";
 
-const GRPC_PORT = process.env.GRPC_PORT ?? '50051';
-
 async function startGrpc() {
   return new Promise<void>((resolve, reject) => {
     grpcServer.bindAsync(

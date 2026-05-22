@@ -3,9 +3,9 @@ import * as grpc from '@grpc/grpc-js';
 import * as authHandler from "./handlers/auth.handler";
 import * as healthHandler from "./handlers/health.handler";
 
-const Fallout = new grpc.Server();
+const server = new grpc.Server();
 
-Fallout.addService(AuthService, {
+server.addService(AuthService, {
   register: authHandler.register,
   anonymousSignIn: authHandler.anonymousSignIn,
   login: authHandler.login,
@@ -19,4 +19,4 @@ Fallout.addService(AuthService, {
   readyz: healthHandler.readyz,
 });
 
-export default Fallout;
+export default server;

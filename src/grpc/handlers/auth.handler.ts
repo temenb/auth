@@ -1,12 +1,12 @@
 import * as grpc from '@grpc/grpc-js';
-import * as AuthGrpc from '../generated/auth';
+import * as authGrpc from '../generated/auth';
 import * as authService from '../../services/auth.service';
 import {callbackError} from './callback.error';
 import logger from "@shared/logger";
 
 export const register = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.RegisterRequest, AuthGrpc.AuthObject>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
+  call: grpc.ServerUnaryCall<authGrpc.RegisterRequest, authGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<authGrpc.AuthObject>
 ) => {
   throw new Error('Registration is disabled');
   const {email, password} = call.request;
@@ -25,8 +25,8 @@ export const register = async (
 };
 
 export const anonymousSignIn = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.AnonymousSignInRequest, AuthGrpc.AuthObject>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
+  call: grpc.ServerUnaryCall<authGrpc.AnonymousSignInRequest, authGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<authGrpc.AuthObject>
 ) => {
   try {
     const {deviceId} = call.request;
@@ -42,8 +42,8 @@ export const anonymousSignIn = async (
 };
 
 export const login = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.LoginRequest, AuthGrpc.AuthObject>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
+  call: grpc.ServerUnaryCall<authGrpc.LoginRequest, authGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<authGrpc.AuthObject>
 ) => {
   throw new Error('Login is disabled');
   const {email, password} = call.request;
@@ -60,8 +60,8 @@ export const login = async (
 };
 
 export const refreshTokens = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.RefreshTokensRequest, AuthGrpc.AuthObject>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
+  call: grpc.ServerUnaryCall<authGrpc.RefreshTokensRequest, authGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<authGrpc.AuthObject>
 ) => {
   const {token} = call.request;
 
@@ -77,8 +77,8 @@ export const refreshTokens = async (
 };
 
 export const logout = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.LogoutRequest, AuthGrpc.LogoutResponse>,
-  callback: grpc.sendUnaryData<AuthGrpc.LogoutResponse>
+  call: grpc.ServerUnaryCall<authGrpc.LogoutRequest, authGrpc.LogoutResponse>,
+  callback: grpc.sendUnaryData<authGrpc.LogoutResponse>
 ) => {
   const {userId} = call.request;
 

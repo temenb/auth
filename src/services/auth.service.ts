@@ -1,5 +1,4 @@
 import {prisma} from '../lib/prisma';
-import {logger} from '@shared/logger';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
 import {randomUUID} from 'crypto';
@@ -69,8 +68,8 @@ export const anonymousSignIn = async (deviceId: string) => {
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
 
-  await prisma.session.deleteMany({ where: { userId: user.id } });
-  await prisma.session.create({ data: { userId: user.id, accessToken, refreshToken } });
+  await prisma.session.deleteMany({where: {userId: user.id}});
+  await prisma.session.create({data: {userId: user.id, accessToken, refreshToken}});
 
   return {accessToken, refreshToken};
 };

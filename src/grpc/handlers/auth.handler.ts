@@ -30,7 +30,7 @@ export const anonymousSignIn = async (
 ) => {
   try {
     const {deviceId} = call.request;
-    logger.log('anonymousSignIn ' + deviceId);
+    // logger.log('anonymousSignIn ' + deviceId);
     const result = await authService.anonymousSignIn(deviceId);
 
     callback(null, result);

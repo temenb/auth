@@ -4,6 +4,7 @@ import logger from '@shared/logger';
 import {initBoss, startWorker} from '@shared/pg-boss';
 import kafkaConfig, {kafkaProducersConfig} from "./config/kafka.config";
 import config from "./config/config";
+import pgBossConfig from "./config/pg.boss.config";
 
 async function startGrpc() {
   return new Promise<void>((resolve, reject) => {
@@ -30,7 +31,7 @@ async function startGrpc() {
 }
 
 async function startPgBoss() {
-  await initBoss(async () => {
+  await initBoss(pgBossConfig, async () => {
     for (const topicConfig of Object.values(kafkaProducersConfig)) {
       await startWorker(kafkaConfig, topicConfig);
     }

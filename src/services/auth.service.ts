@@ -26,6 +26,8 @@ export const createUser = async (email: string, password: string) => {
 
 };
 
+/// @TODO: Verification should rely on more than just the deviceId
+/// @TODO: Add a secret. Erasing data should always result in a new account
 export const anonymousSignIn = async (deviceId: string) => {
   let device = await prisma.device.findUnique({
     where: {deviceId},
@@ -38,7 +40,7 @@ export const anonymousSignIn = async (deviceId: string) => {
     user = await prisma.$transaction(async (tx) => {
       const newUser = await tx.user.create({
         data: {
-          email: randomUUID(),
+          // email: randomUUID(),
           devices: {
             create: {deviceId},
           },

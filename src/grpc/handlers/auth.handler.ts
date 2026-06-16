@@ -3,6 +3,7 @@ import * as authGrpc from '../generated/auth';
 import * as authService from '../../services/auth.service';
 import {callbackError} from './callback.error';
 import logger from "@shared/logger";
+import {userToGrpc} from "../../lib/grpc-prisma-converters/user";
 
 export const register = async (
   call: grpc.ServerUnaryCall<authGrpc.RegisterRequest, authGrpc.AuthObject>,
@@ -86,6 +87,23 @@ export const logout = async (
     const response = await authService.logout(userId);
 
     callback(null, response);
+
+  } catch (err: any) {
+    logger.log(err);
+    callbackError(callback, err);
+  }
+};
+
+export const getUser = async (
+  call: grpc.ServerUnaryCall<authGrpc.UserIdRequest, authGrpc.UserObject>,
+  callback: grpc.sendUnaryData<authGrpc.UserObject>
+) => {
+  try {
+    const {userId} = call.request;
+    // logger.log('anonymousSignIn ' + deviceId);
+    const result = userToGrpc(await authService.getUser(userId));
+
+    callback(null, result);
 
   } catch (err: any) {
     logger.log(err);

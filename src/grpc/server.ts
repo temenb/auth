@@ -6,17 +6,19 @@ import * as healthHandler from "./handlers/health.handler";
 const server = new grpc.Server();
 
 server.addService(AuthService, {
+  health: healthHandler.health,
+  status: healthHandler.status,
+  livez: healthHandler.livez,
+  readyz: healthHandler.readyz,
+
   register: authHandler.register,
   anonymousSignIn: authHandler.anonymousSignIn,
+  getUser: authHandler.getUser,
   login: authHandler.login,
   refreshTokens: authHandler.refreshTokens,
   logout: authHandler.logout,
   // forgotPassword: authHandler.forgotPassword,
   // resetPassword: authHandler.resetPassword,
-  health: healthHandler.health,
-  status: healthHandler.status,
-  livez: healthHandler.livez,
-  readyz: healthHandler.readyz,
 });
 
 export default server;

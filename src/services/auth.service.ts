@@ -26,6 +26,18 @@ export const createUser = async (email: string, password: string) => {
 
 };
 
+export const getUser = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+
+  if (!user) {
+    throw new Error("User does not exist");
+  }
+
+  return user;
+};
+
 /// @TODO: Verification should rely on more than just the deviceId
 /// @TODO: Add a secret. Erasing data should always result in a new account
 export const anonymousSignIn = async (deviceId: string) => {

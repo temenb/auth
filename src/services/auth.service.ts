@@ -1,7 +1,6 @@
 import {prisma} from '../lib/prisma';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
-import {randomUUID} from 'crypto';
 import {kafkaProducersConfig} from "../config/kafka.config";
 import {enqueueEventTx} from "@shared/pg-boss/src/enqueueEvent";
 
@@ -28,7 +27,7 @@ export const createUser = async (email: string, password: string) => {
 
 export const getUser = async (id: string) => {
   const user = await prisma.user.findUnique({
-    where: { id },
+    where: {id},
   });
 
   if (!user) {

@@ -116,11 +116,12 @@ export const login = async (email: string, password: string) => {
   return {accessToken, refreshToken};
 };
 
+
 export const refreshTokens = async (token: string) => {
   const decoded = verifyRefreshToken(token) as any;
 
   // ищем сессию по refreshToken
-  const session = await prisma.session.findUnique({
+  const session = await prisma.session.findFirst({
     where: {refreshToken: token},
     include: {user: true},
   });

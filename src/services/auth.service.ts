@@ -2,8 +2,8 @@ import {prisma} from '../lib/prisma';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
 import {kafkaProducersConfig} from "../config/kafka.config";
-import {enqueueEventTx} from "@shared/pg-boss/src/enqueueEvent";
-
+import {enqueueEventTx} from "@shared/pg-boss-helper/src/enqueueEvent";
+import {Prisma} from '@prisma/client';
 
 export const createUser = async (email: string, password: string) => {
   const existingUser = await prisma.user.findUnique({where: {email}});
@@ -12,7 +12,7 @@ export const createUser = async (email: string, password: string) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
 
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const user = await tx.user.create({
       data: {email, password: hashedPassword},
     });
@@ -48,7 +48,7 @@ export const anonymousSignIn = async (deviceId: string) => {
   let user;
 
   if (!device) {
-    user = await prisma.$transaction(async (tx) => {
+    user = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const newUser = await tx.user.create({
         data: {
           // email: randomUUID(),

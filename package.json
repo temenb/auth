@@ -37,7 +37,7 @@
     "@prisma/client": "^6.19.3",
     "@shared/logger": "workspace:*",
     "@shared/kafka-manager": "workspace:*",
-    "@shared/pg-boss-helper": "workspace:*",
+    "@shared/pg-boss-manager": "workspace:*",
     "kafkajs": "^2.2.4",
     "bcrypt": "^6.0.0",
     "jsonwebtoken": "^9.0.3",

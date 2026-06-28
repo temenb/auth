@@ -2,7 +2,7 @@ import {prisma} from '../lib/prisma';
 import bcrypt from 'bcrypt';
 import {generateAccessToken, generateRefreshToken, verifyRefreshToken} from '../lib/token';
 import {kafkaProducersConfig} from "../config/kafka.config";
-import {enqueueEventTx} from "@shared/pg-boss-helper/src/enqueueEvent";
+import {enqueueEventTx} from "@shared/pg-boss-manager/src/enqueueEvent";
 import {Prisma} from '@prisma/client';
 
 export const createUser = async (email: string, password: string) => {

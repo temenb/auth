@@ -19,3 +19,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.MONOREPO_TOKEN }}" \
             https://api.github.com/repos/temenb/game/dispatches \
             -d '{"event_type":"service-updated","client_payload":{"service":"auth"}}'
+

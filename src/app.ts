@@ -1,7 +1,7 @@
 import grpcServer from './grpc/server';
 import * as grpc from '@grpc/grpc-js';
 import logger from '@shared/logger';
-import {initBoss, startKafkaWorker} from '@shared/pg-boss-manager';
+import pgBossManager from '@shared/pg-boss-manager';
 import kafkaConfig, {kafkaProducersConfig} from "./config/kafka.config";
 import config from "./config/config";
 import pgBossConfig from "./config/pg.boss.config";
@@ -31,9 +31,9 @@ async function startGrpc() {
 }
 
 async function startPgBoss() {
-  await initBoss(pgBossConfig, async () => {
+  await pgBossManager.initBoss(pgBossConfig, async () => {
     for (const topicConfig of Object.values(kafkaProducersConfig)) {
-      await startKafkaWorker(kafkaConfig, topicConfig);
+      await pgBossManager.startKafkaWorker(kafkaConfig, topicConfig);
     }
   });
 }

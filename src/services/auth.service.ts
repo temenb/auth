@@ -17,7 +17,7 @@ export const createUser = async (email: string, password: string) => {
       data: {email, password: hashedPassword},
     });
 
-   pgBossManager.enqueueEventTx(kafkaProducersConfig.topicUserCreated, user, tx);
+    pgBossManager.enqueueEventTx(kafkaProducersConfig.topicUserCreated, user, tx);
 
     return user;
 

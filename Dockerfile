@@ -12,6 +12,7 @@ COPY tsconfig.json ./
 COPY proto ./proto
 
 COPY services/auth/package*.json ./services/auth/
+COPY services/auth/prisma ./services/auth/prisma
 COPY services/auth/jest.config.js ./services/auth/
 COPY services/auth/tsconfig.json ./services/auth/
 COPY services/auth/prisma ./services/auth/prisma/

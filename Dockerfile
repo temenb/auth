@@ -66,6 +66,7 @@ ENV NODE_ENV=production
 #RUN pnpm deploy --filter auth /out
 
 ##COPY --from=build /usr/src/app /usr/src/app
+COPY --from=build /usr/src/app/services/auth/prisma ./services/auth/prisma
 
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/services/auth/node_modules ./services/auth/node_modules

@@ -40,9 +40,6 @@ RUN pnpm --filter @shared/pg-boss-manager build
 
 RUN pnpm --filter auth build
 
-#
-# Создаем production bundle
-#
 RUN pnpm --filter auth deploy /deploy --prod
 
 # ---------- PREDEPLOY ----------
@@ -65,7 +62,7 @@ ENV NODE_ENV=development
 
 COPY --from=base /usr/local/bin/corepack /usr/local/bin/corepack
 RUN corepack enable
-RUN corepack prepare pnpm@8.6.3 --activate
+RUN corepack prepare pnpm@11.9.0 --activate
 
 RUN chown -R node:node /usr/src/app
 

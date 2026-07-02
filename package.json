@@ -10,8 +10,7 @@
     "prisma:generate": "npx prisma generate",
     "start": "node ./dist/app.js",
     "migrate": "npx prisma migrate dev --name init",
-    "test": "jest",
-    "postinstall": "prisma generate --schema=./prisma/schema.prisma"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.8",

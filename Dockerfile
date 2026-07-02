@@ -4,13 +4,13 @@ FROM node:22 AS base
 WORKDIR /usr/src/app
 
 COPY shared ./shared
-COPY proto ./proto
-
 COPY pnpm-lock.yaml ./
+COPY turbo.json ./
 COPY package.json ./
 COPY pnpm-workspace.yaml ./
-COPY turbo.json ./
 COPY tsconfig.base.json ./
+COPY proto ./proto
+
 
 COPY services/auth/package*.json ./services/auth/
 COPY services/auth/jest.config.js ./services/auth/
@@ -26,34 +26,23 @@ ENV NODE_ENV=development
 
 RUN apt-get update && apt-get install -y protobuf-compiler
 
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@11.9.0 --activate
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm fetch
+RUN pnpm install --offline --frozen-lockfile
 
-RUN mkdir -p services/auth/src/grpc/generated
-RUN pnpm --filter auth proto:generate
+RUN mkdir -p ./services/auth/src/grpc/generated
+RUN pnpm run --filter auth proto:generate
 
 RUN pnpm --filter @shared/logger build
 RUN pnpm --filter @shared/grpc-client-manager build
 RUN pnpm --filter @shared/kafka-manager build
 RUN pnpm --filter @shared/pg-boss-manager build
 
+RUN pnpm --filter auth prisma:generate
 RUN pnpm --filter auth build
 
 RUN pnpm --filter auth deploy /deploy --prod
-
-# ---------- PREDEPLOY ----------
-FROM node:22 AS predeploy
-
-WORKDIR /usr/src/app
-
-ENV NODE_ENV=production
-
-COPY --from=build /deploy .
-
-WORKDIR /usr/src/app
-
-CMD ["pnpm", "exec", "prisma", "migrate", "deploy", "--schema=prisma/schema.prisma"]
 
 # ---------- DEV ----------
 FROM build AS dev
@@ -82,6 +71,7 @@ WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
 
+
 COPY --from=build /deploy .
 
 USER node
@@ -92,3 +82,9 @@ CMD ["node", "dist/app.js"]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
   CMD nc -z localhost 50051 || exit 1
+
+
+## ---------- PREDEPLOY ----------
+FROM build AS predeploy
+WORKDIR /usr/src/app/services/auth
+CMD ["npx", "prisma", "migrate", "deploy", "--schema=prisma/schema.prisma"]

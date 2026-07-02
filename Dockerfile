@@ -63,9 +63,9 @@ FROM build AS dev
 
 ENV NODE_ENV=development
 
-#COPY --from=base /usr/local/bin/corepack /usr/local/bin/corepack
-#RUN corepack enable
-#RUN corepack prepare pnpm@8.6.3 --activate
+COPY --from=base /usr/local/bin/corepack /usr/local/bin/corepack
+RUN corepack enable
+RUN corepack prepare pnpm@8.6.3 --activate
 
 RUN chown -R node:node /usr/src/app
 
